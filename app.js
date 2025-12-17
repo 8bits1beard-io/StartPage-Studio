@@ -1238,7 +1238,7 @@ function generateHTML(useComputerNameVariable = false) {
         }
 
         .top-logo {
-            width: 480px;
+            width: 360px;
             height: auto;
         }
 

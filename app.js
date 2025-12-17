@@ -32,7 +32,12 @@ const themes = {
     midnight: { name: 'Midnight', primary: '#312e81', accent: '#fcd34d' },
     teal: { name: 'Teal', primary: '#115e59', accent: '#fb923c' },
     coffee: { name: 'Coffee', primary: '#78350f', accent: '#fef3c7' },
-    steel: { name: 'Steel', primary: '#475569', accent: '#a3e635' }
+    steel: { name: 'Steel', primary: '#475569', accent: '#a3e635' },
+    winter: { name: 'Winter', primary: '#1e40af', accent: '#bfdbfe' },
+    spring: { name: 'Spring', primary: '#15803d', accent: '#fbcfe8' },
+    summer: { name: 'Summer', primary: '#a16207', accent: '#fde047' },
+    independence: { name: 'Independence', primary: '#1e3a8a', accent: '#dc2626' },
+    halloween: { name: 'Halloween', primary: '#431407', accent: '#fb923c' }
 };
 let selectedTheme = 'monochrome';
 let customColors = { primary: '#0053E2', accent: '#FFC220' };

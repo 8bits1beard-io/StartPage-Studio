@@ -46,9 +46,9 @@
 
 ### Color Themes
 
-Choose from 13 preset themes or create custom colors:
+Choose from 18 preset themes or create custom colors:
 
-**Walmart** · **Sunset** · **Violet** · **Slate** · **Forest** · **Ocean** · **Crimson** · **Monochrome** · **Berry** · **Midnight** · **Teal** · **Coffee** · **Steel**
+**Walmart** · **Sunset** · **Violet** · **Slate** · **Forest** · **Ocean** · **Crimson** · **Monochrome** · **Berry** · **Midnight** · **Teal** · **Coffee** · **Steel** · **Winter** · **Spring** · **Summer** · **Independence** · **Halloween**
 
 Selecting Walmart auto-populates the Spark logo.
 

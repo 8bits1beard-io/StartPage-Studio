@@ -78,11 +78,6 @@ header h1 {
     margin: 0 auto;
 }
 
-@media (max-width: 900px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
-}
 
 .panel {
     background: var(--bg-panel);

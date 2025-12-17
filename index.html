@@ -656,6 +656,34 @@
             font-family: monospace;
         }
 
+        /* Logo input row */
+        .logo-input-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .logo-input-row input[type="url"] {
+            flex: 1;
+        }
+
+        .logo-input-row .upload-btn {
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .logo-input-row .btn-sm:last-child {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .logo-input-row .btn-sm:last-child:hover {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
         .custom-warning {
             display: none;
             background: #fff3cd;
@@ -865,8 +893,35 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="logoUrl">Logo URL <small>(optional - leave empty for no logo)</small></label>
-                        <input type="url" id="logoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
+                        <label for="topLogoUrl">Top Logo <small>(above greeting text)</small></label>
+                        <div class="logo-input-row">
+                            <input type="url" id="topLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
+                            <label for="topLogoUpload" class="btn btn-secondary btn-sm upload-btn">
+                                Upload SVG
+                                <input type="file" id="topLogoUpload" accept=".svg,image/svg+xml" onchange="handleLogoUpload('top', this)" class="visually-hidden">
+                            </label>
+                            <button type="button" class="btn btn-sm" onclick="clearLogo('top')" aria-label="Clear top logo" title="Clear">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sideLogoUrl">Side Logo <small>(beside greeting text)</small></label>
+                        <div class="logo-input-row">
+                            <input type="url" id="sideLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
+                            <label for="sideLogoUpload" class="btn btn-secondary btn-sm upload-btn">
+                                Upload SVG
+                                <input type="file" id="sideLogoUpload" accept=".svg,image/svg+xml" onchange="handleLogoUpload('side', this)" class="visually-hidden">
+                            </label>
+                            <button type="button" class="btn btn-sm" onclick="clearLogo('side')" aria-label="Clear side logo" title="Clear">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="sideLogoPositionGroup" style="display: none;">
+                        <label for="sideLogoPosition">Side logo position</label>
+                        <select id="sideLogoPosition" onchange="updatePreview()">
+                            <option value="left" selected>Left of greeting</option>
+                            <option value="right">Right of greeting</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -999,6 +1054,14 @@
                         <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
                             For testing. Computer name shows as placeholder.
                         </p>
+                        <hr style="width: 100%; margin: 1rem 0; border: none; border-top: 1px solid var(--gray-300);">
+                        <label for="importFile" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                            Import Existing Start Page
+                            <input type="file" id="importFile" accept=".html,text/html" onchange="importStartPage(this)" class="visually-hidden">
+                        </label>
+                        <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
+                            Load a previously generated start page to edit.
+                        </p>
                     </div>
                 </section>
             </div>
@@ -1043,8 +1106,6 @@
         let groupIdCounter = 0;
         let linkIdCounter = 0;
 
-        // Walmart Spark logo as embedded data URI
-        const walmartSparkLogo = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 532.262 600"><path fill="#FFC220" d="M375.663,273.363c12.505-2.575,123.146-53.269,133.021-58.97c22.547-13.017,30.271-41.847,17.254-64.393s-41.847-30.271-64.393-17.254c-9.876,5.702-109.099,76.172-117.581,85.715c-9.721,10.937-11.402,26.579-4.211,39.033C346.945,269.949,361.331,276.314,375.663,273.363z"/><path fill="#FFC220" d="M508.685,385.607c-9.876-5.702-120.516-56.396-133.021-58.97c-14.332-2.951-28.719,3.415-35.909,15.87c-7.191,12.455-5.51,28.097,4.211,39.033c8.482,9.542,107.705,80.013,117.581,85.715c22.546,13.017,51.376,5.292,64.393-17.254S531.231,398.624,508.685,385.607z"/><path fill="#FFC220" d="M266.131,385.012c-14.382,0-27.088,9.276-31.698,23.164c-4.023,12.117-15.441,133.282-15.441,144.685c0,26.034,21.105,47.139,47.139,47.139c26.034,0,47.139-21.105,47.139-47.139c0-11.403-11.418-132.568-15.441-144.685C293.219,394.288,280.513,385.012,266.131,385.012z"/><path fill="#FFC220" d="M156.599,326.637c-12.505,2.575-123.146,53.269-133.021,58.97C1.031,398.624-6.694,427.454,6.323,450c13.017,22.546,41.847,30.271,64.393,17.254c9.876-5.702,109.098-76.172,117.58-85.715c9.722-10.937,11.402-26.579,4.211-39.033S170.931,323.686,156.599,326.637z"/><path fill="#FFC220" d="M70.717,132.746C48.171,119.729,19.341,127.454,6.323,150c-13.017,22.546-5.292,51.376,17.254,64.393c9.876,5.702,120.517,56.396,133.021,58.97c14.332,2.951,28.719-3.415,35.91-15.87c7.191-12.455,5.51-28.096-4.211-39.033C179.815,208.918,80.592,138.447,70.717,132.746z"/><path fill="#FFC220" d="M266.131,0c-26.035,0-47.139,21.105-47.139,47.139c0,11.403,11.418,132.568,15.441,144.685c4.611,13.888,17.317,23.164,31.698,23.164s27.088-9.276,31.698-23.164c4.023-12.117,15.441-133.282,15.441-144.685C313.27,21.105,292.165,0,266.131,0z"/></svg>');
 
         // Windows app URI schemes
         const windowsApps = [
@@ -1163,12 +1224,6 @@
         function selectTheme(themeKey) {
             selectedTheme = themeKey;
             renderThemeSwatches();
-
-            // Auto-populate Walmart Spark logo when Walmart theme is selected
-            if (themeKey === 'walmart') {
-                document.getElementById('logoUrl').value = walmartSparkLogo;
-            }
-
             updatePreview();
             const themeName = themeKey === 'custom' ? 'Custom' : themes[themeKey].name;
             announce(`${themeName} theme selected`);
@@ -1189,6 +1244,38 @@
                 document.getElementById(`custom${colorType.charAt(0).toUpperCase() + colorType.slice(1)}Picker`).value = value;
                 updatePreview();
             }
+        }
+
+        // Handle logo SVG file upload
+        function handleLogoUpload(logoType, input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (!file.type.includes('svg')) {
+                alert('Please upload an SVG file.');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const svgContent = e.target.result;
+                const dataUri = 'data:image/svg+xml,' + encodeURIComponent(svgContent);
+                const inputId = logoType === 'top' ? 'topLogoUrl' : 'sideLogoUrl';
+                document.getElementById(inputId).value = dataUri;
+                updatePreview();
+                announce(`${logoType === 'top' ? 'Top' : 'Side'} logo uploaded`);
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset file input
+        }
+
+        // Clear logo
+        function clearLogo(logoType) {
+            const inputId = logoType === 'top' ? 'topLogoUrl' : 'sideLogoUrl';
+            document.getElementById(inputId).value = '';
+            updatePreview();
+            announce(`${logoType === 'top' ? 'Top' : 'Side'} logo cleared`);
         }
 
         // Generate Windows app dropdown options HTML
@@ -1351,7 +1438,9 @@
                     showDateTime: document.getElementById('showDateTime').checked,
                     dateTimeFormat: document.getElementById('dateTimeFormat').value,
                     dateTimePosition: document.getElementById('dateTimePosition').value,
-                    logoUrl: document.getElementById('logoUrl').value,
+                    topLogoUrl: document.getElementById('topLogoUrl').value,
+                    sideLogoUrl: document.getElementById('sideLogoUrl').value,
+                    sideLogoPosition: document.getElementById('sideLogoPosition').value,
                     showFooter: document.getElementById('showFooter').checked,
                     footerText: document.getElementById('footerText').value,
                     destinationPath: document.getElementById('destinationPath').value
@@ -1388,7 +1477,9 @@
                         document.getElementById('showDateTime').checked = state.settings.showDateTime || false;
                         document.getElementById('dateTimeFormat').value = state.settings.dateTimeFormat || 'both';
                         document.getElementById('dateTimePosition').value = state.settings.dateTimePosition || 'top-left';
-                        document.getElementById('logoUrl').value = state.settings.logoUrl || '';
+                        document.getElementById('topLogoUrl').value = state.settings.topLogoUrl || state.settings.headerLogoUrl || state.settings.logoUrl || '';
+                        document.getElementById('sideLogoUrl').value = state.settings.sideLogoUrl || state.settings.cornerLogoUrl || '';
+                        document.getElementById('sideLogoPosition').value = state.settings.sideLogoPosition || 'left';
                         document.getElementById('showFooter').checked = state.settings.showFooter !== false;
                         document.getElementById('footerText').value = state.settings.footerText || '';
                         document.getElementById('destinationPath').value = state.settings.destinationPath || 'C:\\ProgramData\\StartPage\\index.html';
@@ -1762,7 +1853,9 @@
             const showDateTime = document.getElementById('showDateTime').checked;
             const dateTimeFormat = document.getElementById('dateTimeFormat').value;
             const dateTimePosition = document.getElementById('dateTimePosition').value;
-            const logoUrl = document.getElementById('logoUrl').value.trim();
+            const topLogoUrl = document.getElementById('topLogoUrl').value.trim();
+            const sideLogoUrl = document.getElementById('sideLogoUrl').value.trim();
+            const sideLogoPosition = document.getElementById('sideLogoPosition').value;
             const showFooter = document.getElementById('showFooter').checked;
             const footerText = document.getElementById('footerText').value || '';
             const colors = getActiveColors();
@@ -1810,20 +1903,67 @@
             <p style="color: rgba(255,255,255,0.7); font-style: italic;">No links configured</p>`;
             }
 
-            const logoHTML = logoUrl ? `<img class="logo" src="${escapeHtml(logoUrl)}" alt="Logo">` : '';
+            const topLogoHTML = topLogoUrl ? `<img class="top-logo" src="${escapeHtml(topLogoUrl)}" alt="Logo">` : '';
+            const sideLogoHTML = sideLogoUrl ? `<img class="side-logo" src="${escapeHtml(sideLogoUrl)}" alt="">` : '';
 
-            const welcomeHeader = logoUrl ? `
-        <div class="welcome-header">
-            ${logoHTML}
-            <h1>${escapeHtml(greeting)}</h1>
-        </div>` : `
+            // Build welcome header with proper structure
+            let welcomeHeader = '';
+            if (topLogoUrl) {
+                welcomeHeader += `
+        <div class="top-logo-container">
+            ${topLogoHTML}
+        </div>`;
+            }
+
+            if (sideLogoUrl) {
+                const logoFirst = sideLogoPosition === 'left';
+                welcomeHeader += `
+        <div class="greeting-row${sideLogoPosition === 'right' ? ' logo-right' : ''}">
+            ${logoFirst ? sideLogoHTML : ''}<h1>${escapeHtml(greeting)}</h1>${!logoFirst ? sideLogoHTML : ''}
+        </div>`;
+            } else {
+                welcomeHeader += `
         <h1>${escapeHtml(greeting)}</h1>`;
+            }
+
+            // Build configuration object for import/export
+            const config = {
+                version: '1.0',
+                generator: 'StartPage Studio',
+                settings: {
+                    pageTitle,
+                    greeting,
+                    showComputerName,
+                    computerNamePosition,
+                    showDateTime,
+                    dateTimeFormat,
+                    dateTimePosition,
+                    topLogoUrl,
+                    sideLogoUrl,
+                    sideLogoPosition,
+                    showFooter,
+                    footerText
+                },
+                theme: {
+                    selectedTheme,
+                    customColors: selectedTheme === 'custom' ? customColors : null,
+                    primary: colors.primary,
+                    accent: colors.accent
+                },
+                groups: groups.map(g => ({
+                    name: g.name,
+                    links: g.links.map(l => ({ name: l.name, url: l.url }))
+                })),
+                ungroupedLinks: ungroupedLinks.map(l => ({ name: l.name, url: l.url }))
+            };
+            const configJson = JSON.stringify(config);
 
             return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="StartPage Studio">
     <meta name="description" content="Quick links landing page">
     <title>${escapeHtml(pageTitle)}</title>
     <style>
@@ -1970,7 +2110,18 @@
             padding: 2rem;
         }
 
-        .welcome-header {
+        .top-logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .top-logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .greeting-row {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1978,8 +2129,12 @@
             margin-bottom: 2rem;
         }
 
-        .logo {
-            width: 60px;
+        .greeting-row.logo-right {
+            flex-direction: row;
+        }
+
+        .side-logo {
+            width: 56px;
             height: auto;
             flex-shrink: 0;
         }
@@ -1991,11 +2146,11 @@
         }
 
         .links-container {
-            max-width: 900px;
             width: 100%;
+            max-width: 1400px;
             padding: 0 1rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1.5rem;
         }
 
@@ -2145,6 +2300,7 @@ ${showDateTime ? `
         setInterval(updateDateTime, 1000);
     <` + `/script>
 ` : ''}
+<!-- StartPage Studio Config: ${configJson} -->
 </body>
 </html>`;
         }
@@ -2207,6 +2363,10 @@ ${showDateTime ? `
             if (showDateTime) {
                 updateDateTimePositionOptions();
             }
+
+            // Toggle side logo position visibility
+            const sideLogoUrl = document.getElementById('sideLogoUrl').value.trim();
+            document.getElementById('sideLogoPositionGroup').style.display = sideLogoUrl ? 'block' : 'none';
 
             // Save state to localStorage
             saveState();
@@ -2350,6 +2510,104 @@ Write-Log "Log file: $logFile"
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             announce('HTML file downloaded');
+        }
+
+        // Import existing start page
+        function importStartPage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const html = e.target.result;
+
+                // Check for StartPage Studio signature
+                if (!html.includes('<meta name="generator" content="StartPage Studio">')) {
+                    alert('This file was not created by StartPage Studio.\n\nOnly HTML files generated by this tool can be imported.');
+                    input.value = '';
+                    return;
+                }
+
+                // Extract config from comment
+                const configMatch = html.match(/<!-- StartPage Studio Config: (.+?) -->/);
+                if (!configMatch) {
+                    alert('Could not find configuration data in this file.\n\nThe file may have been modified or is from an older version.');
+                    input.value = '';
+                    return;
+                }
+
+                try {
+                    const config = JSON.parse(configMatch[1]);
+                    applyImportedConfig(config);
+                    announce('Start page imported successfully');
+                    alert('Start page imported successfully!\n\nYou can now edit and re-export it.');
+                } catch (err) {
+                    alert('Error parsing configuration data.\n\nThe file may be corrupted.');
+                    console.error('Import error:', err);
+                }
+
+                input.value = ''; // Reset file input
+            };
+            reader.readAsText(file);
+        }
+
+        // Apply imported configuration
+        function applyImportedConfig(config) {
+            // Apply settings
+            if (config.settings) {
+                document.getElementById('pageTitle').value = config.settings.pageTitle || 'Quick Links';
+                document.getElementById('greeting').value = config.settings.greeting || 'Welcome';
+                document.getElementById('showComputerName').checked = config.settings.showComputerName !== false;
+                document.getElementById('computerNamePosition').value = config.settings.computerNamePosition || 'top-right';
+                document.getElementById('showDateTime').checked = config.settings.showDateTime || false;
+                document.getElementById('dateTimeFormat').value = config.settings.dateTimeFormat || 'both';
+                document.getElementById('dateTimePosition').value = config.settings.dateTimePosition || 'top-left';
+                document.getElementById('topLogoUrl').value = config.settings.topLogoUrl || '';
+                document.getElementById('sideLogoUrl').value = config.settings.sideLogoUrl || '';
+                document.getElementById('sideLogoPosition').value = config.settings.sideLogoPosition || 'left';
+                document.getElementById('showFooter').checked = config.settings.showFooter !== false;
+                document.getElementById('footerText').value = config.settings.footerText || '';
+            }
+
+            // Apply theme
+            if (config.theme) {
+                selectedTheme = config.theme.selectedTheme || 'monochrome';
+                if (config.theme.customColors) {
+                    customColors = config.theme.customColors;
+                    document.getElementById('customPrimary').value = customColors.primary;
+                    document.getElementById('customPrimaryPicker').value = customColors.primary;
+                    document.getElementById('customAccent').value = customColors.accent;
+                    document.getElementById('customAccentPicker').value = customColors.accent;
+                }
+                renderThemeSwatches();
+            }
+
+            // Apply groups
+            if (config.groups) {
+                groups = config.groups.map(g => ({
+                    id: groupIdCounter++,
+                    name: g.name,
+                    links: g.links.map(l => ({
+                        id: linkIdCounter++,
+                        name: l.name,
+                        url: l.url
+                    }))
+                }));
+                renderGroups();
+            }
+
+            // Apply ungrouped links
+            if (config.ungroupedLinks) {
+                ungroupedLinks = config.ungroupedLinks.map(l => ({
+                    id: linkIdCounter++,
+                    name: l.name,
+                    url: l.url
+                }));
+                renderUngroupedLinks();
+            }
+
+            updatePreview();
+            saveState();
         }
 
         // Initialize on load

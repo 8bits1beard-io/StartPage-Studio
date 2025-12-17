@@ -372,29 +372,6 @@
             max-width: 35%;
         }
 
-        .link-row select.windows-app-select {
-            width: auto;
-            min-width: 140px;
-            flex: 0 0 auto;
-            font-size: 0.875rem;
-            padding: 0.5rem;
-            background-color: #e7f1ff;
-            border: 1px solid var(--true-blue);
-            border-radius: 4px;
-            color: var(--true-blue);
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .link-row select.windows-app-select:hover {
-            background-color: #d0e3ff;
-        }
-
-        .link-row select.windows-app-select:focus {
-            outline: none;
-            box-shadow: var(--focus-ring);
-        }
-
         .link-row select.link-type-select {
             width: 65px;
             flex: 0 0 auto;
@@ -1168,43 +1145,6 @@
         let groupIdCounter = 0;
         let linkIdCounter = 0;
 
-
-        // Windows app URI schemes
-        const windowsApps = [
-            { category: 'System Settings', name: 'Settings Home', uri: 'ms-settings:' },
-            { category: 'System Settings', name: 'Display', uri: 'ms-settings:display' },
-            { category: 'System Settings', name: 'Network & Internet', uri: 'ms-settings:network' },
-            { category: 'System Settings', name: 'Wi-Fi', uri: 'ms-settings:network-wifi' },
-            { category: 'System Settings', name: 'Bluetooth', uri: 'ms-settings:bluetooth' },
-            { category: 'System Settings', name: 'Printers & Scanners', uri: 'ms-settings:printers' },
-            { category: 'System Settings', name: 'Sound', uri: 'ms-settings:sound' },
-            { category: 'System Settings', name: 'Default Apps', uri: 'ms-settings:defaultapps' },
-            { category: 'System Settings', name: 'Storage', uri: 'ms-settings:storagesense' },
-            { category: 'System Settings', name: 'Windows Update', uri: 'ms-settings:windowsupdate' },
-            { category: 'System Settings', name: 'Privacy', uri: 'ms-settings:privacy' },
-            { category: 'System Settings', name: 'About / System Info', uri: 'ms-settings:about' },
-            { category: 'System Settings', name: 'VPN', uri: 'ms-settings:network-vpn' },
-            { category: 'System Settings', name: 'Proxy', uri: 'ms-settings:network-proxy' },
-            { category: 'Built-in Apps', name: 'Calculator', uri: 'calculator:' },
-            { category: 'Built-in Apps', name: 'Clock / Alarms', uri: 'ms-clock:' },
-            { category: 'Built-in Apps', name: 'Photos', uri: 'ms-photos:' },
-            { category: 'Built-in Apps', name: 'Paint', uri: 'ms-paint:' },
-            { category: 'Built-in Apps', name: 'Snipping Tool', uri: 'ms-screenclip:' },
-            { category: 'Built-in Apps', name: 'Snip & Sketch', uri: 'ms-screensketch:' },
-            { category: 'Built-in Apps', name: 'Microsoft To Do', uri: 'ms-todo:' },
-            { category: 'Built-in Apps', name: 'Weather', uri: 'msnweather:' },
-            { category: 'Built-in Apps', name: 'Maps', uri: 'bingmaps:' },
-            { category: 'Built-in Apps', name: 'Xbox', uri: 'xbox:' },
-            { category: 'Built-in Apps', name: 'Microsoft Store', uri: 'ms-windows-store:' },
-            { category: 'Built-in Apps', name: 'Feedback Hub', uri: 'feedback-hub:' },
-            { category: 'Built-in Apps', name: 'Tips / Get Started', uri: 'ms-get-started:' },
-            { category: 'Microsoft 365', name: 'Outlook', uri: 'ms-outlook:' },
-            { category: 'Microsoft 365', name: 'Microsoft Teams', uri: 'msteams:' },
-            { category: 'Microsoft 365', name: 'Teams Chat', uri: 'ms-chat:' },
-            { category: 'Network', name: 'Wi-Fi Networks', uri: 'ms-availablenetworks:' },
-            { category: 'Browser', name: 'Microsoft Edge', uri: 'microsoft-edge:' },
-        ];
-
         // Theme presets (all WCAG AA verified)
         const themes = {
             walmart: { name: 'Walmart', primary: '#0053E2', accent: '#FFC220' },
@@ -1385,73 +1325,6 @@
                 updatePreview();
                 announce('Group icon cleared');
             }
-        }
-
-        // Generate Windows app dropdown options HTML
-        function getWindowsAppOptionsHTML() {
-            const categories = [...new Set(windowsApps.map(app => app.category))];
-            let html = '<option value="">+ Quick Add App</option>';
-            categories.forEach(category => {
-                html += `<optgroup label="${category}">`;
-                windowsApps.filter(app => app.category === category).forEach(app => {
-                    html += `<option value="${app.uri}" data-name="${escapeHtml(app.name)}">${app.name}</option>`;
-                });
-                html += '</optgroup>';
-            });
-            return html;
-        }
-
-        // Handle Windows app selection for grouped links
-        function selectWindowsApp(groupId, linkId, selectElement) {
-            if (!selectElement.value) return;
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const appName = selectedOption.dataset.name;
-            const appUri = selectElement.value;
-
-            // Update the link data
-            const group = groups.find(g => g.id === groupId);
-            if (group) {
-                const link = group.links.find(l => l.id === linkId);
-                if (link) {
-                    link.name = appName;
-                    link.url = appUri;
-                }
-            }
-
-            // Update the input fields
-            document.getElementById(`link-name-${groupId}-${linkId}`).value = appName;
-            document.getElementById(`link-url-${groupId}-${linkId}`).value = appUri;
-
-            // Reset the dropdown
-            selectElement.value = '';
-
-            updatePreview();
-            announce(`${appName} added`);
-        }
-
-        // Handle Windows app selection for ungrouped links
-        function selectWindowsAppUngrouped(linkId, selectElement) {
-            if (!selectElement.value) return;
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const appName = selectedOption.dataset.name;
-            const appUri = selectElement.value;
-
-            // Update the link data
-            const link = ungroupedLinks.find(l => l.id === linkId);
-            if (link) {
-                link.name = appName;
-                link.url = appUri;
-            }
-
-            // Update the input fields
-            document.getElementById(`ungrouped-name-${linkId}`).value = appName;
-            document.getElementById(`ungrouped-url-${linkId}`).value = appUri;
-
-            // Reset the dropdown
-            selectElement.value = '';
-
-            updatePreview();
-            announce(`${appName} added`);
         }
 
         // Announce to screen readers

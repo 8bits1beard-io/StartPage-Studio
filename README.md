@@ -80,6 +80,8 @@ Edge, Chrome, Firefox, Safari
 | File | Purpose |
 |------|---------|
 | `index.html` | Landing Page Studio application |
+| `styles.css` | Application styles |
+| `app.js` | Application logic |
 | `README.md` | This documentation |
 | `DEPLOYMENT.md` | Enterprise deployment guide |
 | `CONTRIBUTING.md` | Developer documentation |

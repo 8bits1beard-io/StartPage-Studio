@@ -37,7 +37,9 @@ const themes = {
     spring: { name: 'Spring', primary: '#15803d', accent: '#fbcfe8' },
     summer: { name: 'Summer', primary: '#a16207', accent: '#fde047' },
     independence: { name: 'Independence', primary: '#1e3a8a', accent: '#dc2626' },
-    halloween: { name: 'Halloween', primary: '#431407', accent: '#fb923c' }
+    halloween: { name: 'Halloween', primary: '#431407', accent: '#fb923c' },
+    synthwave: { name: 'Synthwave', primary: '#be185d', accent: '#22d3ee' },
+    corporate: { name: 'Corporate', primary: '#1e3a8a', accent: '#9ca3af' }
 };
 let selectedTheme = 'monochrome';
 let customColors = { primary: '#0053E2', accent: '#FFC220' };

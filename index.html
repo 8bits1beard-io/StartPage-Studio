@@ -395,6 +395,14 @@
             box-shadow: var(--focus-ring);
         }
 
+        .link-row select.link-type-select {
+            width: 65px;
+            flex: 0 0 auto;
+            font-size: 0.75rem;
+            padding: 0.375rem 0.25rem;
+            border-radius: 4px;
+        }
+
         /* Drag and drop styles */
         .drag-handle {
             cursor: grab;
@@ -1898,20 +1906,31 @@
                                  ondragleave="handleLinkDragLeave(event)"
                                  ondrop="handleLinkDrop(event, ${group.id}, ${link.id})">
                                 <span class="drag-handle" title="Drag to reorder">⋮</span>
-                                <label for="link-name-${group.id}-${link.id}" class="visually-hidden">Link ${linkIndex + 1} display name</label>
+                                <select class="link-type-select" aria-label="Link type" onchange="updateGroupLink(${group.id}, ${link.id}, 'type', this.value); renderGroups();">
+                                    <option value="web" ${(link.type || 'web') === 'web' ? 'selected' : ''}>Web</option>
+                                    <option value="app" ${link.type === 'app' ? 'selected' : ''}>App</option>
+                                </select>
                                 <input type="text" id="link-name-${group.id}-${link.id}" value="${escapeHtml(link.name)}"
-                                       placeholder="Link name"
+                                       placeholder="Display name"
                                        aria-label="Link display name"
                                        onchange="updateGroupLink(${group.id}, ${link.id}, 'name', this.value)">
-                                <label for="link-url-${group.id}-${link.id}" class="visually-hidden">Link ${linkIndex + 1} URL</label>
-                                <input type="url" id="link-url-${group.id}-${link.id}" value="${escapeHtml(link.url)}"
+                                ${(link.type || 'web') === 'web' ? `
+                                <input type="url" id="link-url-${group.id}-${link.id}" value="${escapeHtml(link.url || '')}"
                                        placeholder="https://example.com"
                                        aria-label="Link URL"
                                        onchange="updateGroupLink(${group.id}, ${link.id}, 'url', this.value)"
                                        onblur="validateUrlInput(this)">
-                                <select class="windows-app-select" aria-label="Quick add Windows app" onchange="selectWindowsApp(${group.id}, ${link.id}, this)">
-                                    ${getWindowsAppOptionsHTML()}
-                                </select>
+                                ` : `
+                                <input type="text" id="link-apppath-${group.id}-${link.id}" value="${escapeHtml(link.appPath || '')}"
+                                       placeholder="C:\\Windows\\System32\\app.exe"
+                                       aria-label="Executable path"
+                                       onchange="updateGroupLink(${group.id}, ${link.id}, 'appPath', this.value)">
+                                <input type="text" id="link-shortcut-${group.id}-${link.id}" value="${escapeHtml(link.shortcutName || '')}"
+                                       placeholder="Shortcut.lnk"
+                                       aria-label="Shortcut filename"
+                                       style="width: 120px;"
+                                       onchange="updateGroupLink(${group.id}, ${link.id}, 'shortcutName', this.value)">
+                                `}
                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeLinkFromGroup(${group.id}, ${link.id})" aria-label="Remove link ${escapeHtml(link.name) || linkIndex + 1}">
                                     <span aria-hidden="true">X</span>
                                     <span class="visually-hidden">Remove</span>
@@ -1933,22 +1952,33 @@
                 return;
             }
 
-            container.innerHTML = `<div role="list" aria-label="Ungrouped links">` + ungroupedLinks.map((link, linkIndex) => `
+            container.innerHTML = `<div role="list" aria-label="Standalone links">` + ungroupedLinks.map((link, linkIndex) => `
                 <div class="link-row" style="margin-bottom: 0.75rem;" role="listitem">
-                    <label for="ungrouped-name-${link.id}" class="visually-hidden">Ungrouped link ${linkIndex + 1} display name</label>
+                    <select class="link-type-select" aria-label="Link type" onchange="updateUngroupedLink(${link.id}, 'type', this.value); renderUngroupedLinks();">
+                        <option value="web" ${(link.type || 'web') === 'web' ? 'selected' : ''}>Web</option>
+                        <option value="app" ${link.type === 'app' ? 'selected' : ''}>App</option>
+                    </select>
                     <input type="text" id="ungrouped-name-${link.id}" value="${escapeHtml(link.name)}"
-                           placeholder="Link name"
+                           placeholder="Display name"
                            aria-label="Link display name"
                            onchange="updateUngroupedLink(${link.id}, 'name', this.value)">
-                    <label for="ungrouped-url-${link.id}" class="visually-hidden">Ungrouped link ${linkIndex + 1} URL</label>
-                    <input type="url" id="ungrouped-url-${link.id}" value="${escapeHtml(link.url)}"
+                    ${(link.type || 'web') === 'web' ? `
+                    <input type="url" id="ungrouped-url-${link.id}" value="${escapeHtml(link.url || '')}"
                            placeholder="https://example.com"
                            aria-label="Link URL"
                            onchange="updateUngroupedLink(${link.id}, 'url', this.value)"
                            onblur="validateUrlInput(this)">
-                    <select class="windows-app-select" aria-label="Quick add Windows app" onchange="selectWindowsAppUngrouped(${link.id}, this)">
-                        ${getWindowsAppOptionsHTML()}
-                    </select>
+                    ` : `
+                    <input type="text" id="ungrouped-apppath-${link.id}" value="${escapeHtml(link.appPath || '')}"
+                           placeholder="C:\\Windows\\System32\\app.exe"
+                           aria-label="Executable path"
+                           onchange="updateUngroupedLink(${link.id}, 'appPath', this.value)">
+                    <input type="text" id="ungrouped-shortcut-${link.id}" value="${escapeHtml(link.shortcutName || '')}"
+                           placeholder="Shortcut.lnk"
+                           aria-label="Shortcut filename"
+                           style="width: 120px;"
+                           onchange="updateUngroupedLink(${link.id}, 'shortcutName', this.value)">
+                    `}
                     <button type="button" class="btn btn-danger btn-sm" onclick="removeUngroupedLink(${link.id})" aria-label="Remove link ${escapeHtml(link.name) || linkIndex + 1}">
                         <span aria-hidden="true">X</span>
                         <span class="visually-hidden">Remove</span>
@@ -1989,10 +2019,10 @@
             let linksHTML = '';
 
             // Add grouped links
-            const validGroups = groups.filter(g => g.name && g.links.some(l => l.name && l.url));
+            const validGroups = groups.filter(g => g.name && g.links.some(l => l.name && (l.url || l.appPath)));
             if (validGroups.length > 0) {
                 linksHTML += validGroups.map(group => {
-                    const validLinks = group.links.filter(l => l.name && l.url);
+                    const validLinks = group.links.filter(l => l.name && (l.url || l.appPath));
                     if (validLinks.length === 0) return '';
 
                     const groupId = group.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -2003,20 +2033,28 @@
                     ${groupIconHtml}<h2 id="${groupId}-heading" class="group-heading">${escapeHtml(group.name)}</h2>
                 </div>
                 <ul class="links-list">
-                    ${validLinks.map(link => `
-                    <li><a href="${escapeHtml(link.url)}" class="link-button">${escapeHtml(link.name)}</a></li>`).join('')}
+                    ${validLinks.map(link => {
+                        const href = link.type === 'app'
+                            ? './' + escapeHtml(link.shortcutName || link.name + '.lnk')
+                            : escapeHtml(link.url);
+                        return `<li><a href="${href}" class="link-button">${escapeHtml(link.name)}</a></li>`;
+                    }).join('')}
                 </ul>
             </section>`;
                 }).join('');
             }
 
             // Add standalone links (no group heading)
-            const validUngrouped = ungroupedLinks.filter(l => l.name && l.url);
+            const validUngrouped = ungroupedLinks.filter(l => l.name && (l.url || l.appPath));
             if (validUngrouped.length > 0) {
                 linksHTML += `
             <div class="standalone-links">
-                ${validUngrouped.map(link => `
-                <a href="${escapeHtml(link.url)}" class="link-button standalone">${escapeHtml(link.name)}</a>`).join('')}
+                ${validUngrouped.map(link => {
+                    const href = link.type === 'app'
+                        ? './' + escapeHtml(link.shortcutName || link.name + '.lnk')
+                        : escapeHtml(link.url);
+                    return `<a href="${href}" class="link-button standalone">${escapeHtml(link.name)}</a>`;
+                }).join('')}
             </div>`;
             }
 
@@ -2079,9 +2117,21 @@
                 groups: groups.map(g => ({
                     name: g.name,
                     icon: g.icon || '',
-                    links: g.links.map(l => ({ name: l.name, url: l.url }))
+                    links: g.links.map(l => ({
+                        name: l.name,
+                        type: l.type || 'web',
+                        url: l.url || '',
+                        appPath: l.appPath || '',
+                        shortcutName: l.shortcutName || ''
+                    }))
                 })),
-                ungroupedLinks: ungroupedLinks.map(l => ({ name: l.name, url: l.url }))
+                ungroupedLinks: ungroupedLinks.map(l => ({
+                    name: l.name,
+                    type: l.type || 'web',
+                    url: l.url || '',
+                    appPath: l.appPath || '',
+                    shortcutName: l.shortcutName || ''
+                }))
             };
             const configJson = JSON.stringify(config);
 
@@ -2548,6 +2598,47 @@ ${showDateTime ? `
             const folderPath = destinationPath.substring(0, destinationPath.lastIndexOf('\\')) || 'C:\\ProgramData\\StartPage';
             const escapedFolderPath = folderPath.replace(/\\/g, '\\\\');
 
+            // Collect all app links for shortcut creation
+            const appLinks = [];
+            groups.forEach(group => {
+                group.links.forEach(link => {
+                    if (link.type === 'app' && link.appPath) {
+                        appLinks.push({
+                            name: link.shortcutName || (link.name + '.lnk'),
+                            path: link.appPath
+                        });
+                    }
+                });
+            });
+            ungroupedLinks.forEach(link => {
+                if (link.type === 'app' && link.appPath) {
+                    appLinks.push({
+                        name: link.shortcutName || (link.name + '.lnk'),
+                        path: link.appPath
+                    });
+                }
+            });
+
+            // Generate shortcut creation code
+            let shortcutCode = '';
+            if (appLinks.length > 0) {
+                shortcutCode = `
+# Create shortcuts for local applications
+$WshShell = New-Object -ComObject WScript.Shell
+`;
+                appLinks.forEach(app => {
+                    const shortcutName = app.name.endsWith('.lnk') ? app.name : app.name + '.lnk';
+                    const escapedName = shortcutName.replace(/'/g, "''");
+                    const escapedPath = app.path.replace(/'/g, "''");
+                    shortcutCode += `
+$shortcut = $WshShell.CreateShortcut("$outputFolder\\${escapedName}")
+$shortcut.TargetPath = '${escapedPath}'
+$shortcut.Save()
+Write-Log "Created shortcut: ${escapedName}"
+`;
+                });
+            }
+
             return `# Generate-StartPage.ps1
 # Generated by StartPage Studio
 # Author: Joshua Walderbach
@@ -2584,8 +2675,9 @@ ${escapedHtml}
 
 # Write the HTML file
 $htmlContent | Out-File -FilePath $outputPath -Encoding UTF8 -Force
-
 Write-Log "Landing page generated successfully"
+${shortcutCode}
+Write-Log "Script completed"
 Write-Log "Log file: $logFile"
 `;
         }
@@ -2758,7 +2850,10 @@ Write-Log "Log file: $logFile"
                     links: g.links.map(l => ({
                         id: linkIdCounter++,
                         name: l.name,
-                        url: l.url
+                        type: l.type || 'web',
+                        url: l.url || '',
+                        appPath: l.appPath || '',
+                        shortcutName: l.shortcutName || ''
                     }))
                 }));
                 renderGroups();
@@ -2769,7 +2864,10 @@ Write-Log "Log file: $logFile"
                 ungroupedLinks = config.ungroupedLinks.map(l => ({
                     id: linkIdCounter++,
                     name: l.name,
-                    url: l.url
+                    type: l.type || 'web',
+                    url: l.url || '',
+                    appPath: l.appPath || '',
+                    shortcutName: l.shortcutName || ''
                 }));
                 renderUngroupedLinks();
             }

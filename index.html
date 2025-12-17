@@ -965,6 +965,26 @@
                     </div>
 
                     <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enableAutoRefresh" onchange="updatePreview()">
+                            <label for="enableAutoRefresh">Auto-redirect to another page</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="autoRefreshOptionsGroup" style="display: none;">
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <div style="flex: 0 0 auto;">
+                                <label for="autoRefreshDelay">Delay (seconds)</label>
+                                <input type="number" id="autoRefreshDelay" value="30" min="1" max="3600" style="width: 80px;" oninput="updatePreview()">
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <label for="autoRefreshUrl">Redirect URL</label>
+                                <input type="url" id="autoRefreshUrl" value="" placeholder="https://example.com" oninput="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="destinationPath">Destination Path <small>(where landing page will be saved)</small></label>
                         <input type="text" id="destinationPath" value="C:\ProgramData\StartPage\index.html" placeholder="C:\ProgramData\StartPage\index.html">
                     </div>
@@ -1040,16 +1060,16 @@
 
                 <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-300);">
 
-                <!-- Ungrouped Links -->
+                <!-- Standalone Links -->
                 <section aria-labelledby="ungrouped-heading">
-                    <div class="section-header collapsed" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="false" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('ungrouped-links')">
+                    <div class="section-header" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="true" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('ungrouped-links')">
                         <h3 id="ungrouped-heading" style="color: var(--true-blue); cursor: pointer;">
-                            <span class="collapse-icon">▼</span> Ungrouped Links
+                            <span class="collapse-icon">▼</span> Standalone Links
                         </h3>
                     </div>
-                    <div class="section-content collapsed" id="ungrouped-links-content">
+                    <div class="section-content" id="ungrouped-links-content">
                     <p id="ungrouped-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
-                        Links here will appear without a group heading.
+                        Links here appear without a group heading.
                     </p>
 
                     <div id="ungroupedLinksContainer" role="region" aria-labelledby="ungrouped-heading" aria-live="polite">
@@ -1518,6 +1538,9 @@
                     sideLogoPosition: document.getElementById('sideLogoPosition').value,
                     showFooter: document.getElementById('showFooter').checked,
                     footerText: document.getElementById('footerText').value,
+                    enableAutoRefresh: document.getElementById('enableAutoRefresh').checked,
+                    autoRefreshDelay: document.getElementById('autoRefreshDelay').value,
+                    autoRefreshUrl: document.getElementById('autoRefreshUrl').value,
                     destinationPath: document.getElementById('destinationPath').value
                 }
             };
@@ -1557,6 +1580,9 @@
                         document.getElementById('sideLogoPosition').value = state.settings.sideLogoPosition || 'left';
                         document.getElementById('showFooter').checked = state.settings.showFooter !== false;
                         document.getElementById('footerText').value = state.settings.footerText || '';
+                        document.getElementById('enableAutoRefresh').checked = state.settings.enableAutoRefresh || false;
+                        document.getElementById('autoRefreshDelay').value = state.settings.autoRefreshDelay || '30';
+                        document.getElementById('autoRefreshUrl').value = state.settings.autoRefreshUrl || '';
                         document.getElementById('destinationPath').value = state.settings.destinationPath || 'C:\\ProgramData\\StartPage\\index.html';
 
                         // Restore custom color inputs if custom theme
@@ -1944,6 +1970,9 @@
             const sideLogoUrl = document.getElementById('sideLogoUrl').value.trim();
             const sideLogoPosition = document.getElementById('sideLogoPosition').value;
             const showFooter = document.getElementById('showFooter').checked;
+            const enableAutoRefresh = document.getElementById('enableAutoRefresh').checked;
+            const autoRefreshDelay = document.getElementById('autoRefreshDelay').value || '30';
+            const autoRefreshUrl = document.getElementById('autoRefreshUrl').value.trim();
             const footerText = document.getElementById('footerText').value || '';
             const colors = getActiveColors();
 
@@ -1974,19 +2003,14 @@
                 }).join('');
             }
 
-            // Add ungrouped links
+            // Add standalone links (no group heading)
             const validUngrouped = ungroupedLinks.filter(l => l.name && l.url);
             if (validUngrouped.length > 0) {
                 linksHTML += `
-            <section class="link-group" aria-labelledby="links-heading">
-                <div class="group-heading-row">
-                    <h2 id="links-heading" class="group-heading">Quick Links</h2>
-                </div>
-                <ul class="links-list">
-                    ${validUngrouped.map(link => `
-                    <li><a href="${escapeHtml(link.url)}" class="link-button">${escapeHtml(link.name)}</a></li>`).join('')}
-                </ul>
-            </section>`;
+            <div class="standalone-links">
+                ${validUngrouped.map(link => `
+                <a href="${escapeHtml(link.url)}" class="link-button standalone">${escapeHtml(link.name)}</a>`).join('')}
+            </div>`;
             }
 
             // If no links at all, show placeholder
@@ -2034,7 +2058,10 @@
                     sideLogoUrl,
                     sideLogoPosition,
                     showFooter,
-                    footerText
+                    footerText,
+                    enableAutoRefresh,
+                    autoRefreshDelay,
+                    autoRefreshUrl
                 },
                 theme: {
                     selectedTheme,
@@ -2057,7 +2084,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="StartPage Studio">
-    <meta name="description" content="Quick links landing page">
+    <meta name="description" content="Quick links landing page">${enableAutoRefresh && autoRefreshUrl ? `
+    <meta http-equiv="refresh" content="${autoRefreshDelay};url=${escapeHtml(autoRefreshUrl)}">` : ''}
     <title>${escapeHtml(pageTitle)}</title>
     <style>
         :root {
@@ -2210,7 +2238,7 @@
         }
 
         .top-logo {
-            width: 100px;
+            width: 120px;
             height: auto;
         }
 
@@ -2218,7 +2246,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.25rem;
             margin-bottom: 2rem;
         }
 
@@ -2227,13 +2255,13 @@
         }
 
         .side-logo {
-            width: 56px;
+            width: 64px;
             height: auto;
             flex-shrink: 0;
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 3rem;
             color: var(--white);
             margin: 0;
         }
@@ -2242,12 +2270,15 @@
             width: 100%;
             max-width: 1400px;
             padding: 0 1rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 1.5rem;
         }
 
         .link-group {
+            flex: 0 1 280px;
+            max-width: 350px;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 1.25rem;
@@ -2284,6 +2315,18 @@
             gap: 0.75rem;
             padding: 0;
             margin: 0;
+        }
+
+        .standalone-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .standalone-links .link-button {
+            min-width: 150px;
         }
 
         .links-list li {
@@ -2352,8 +2395,12 @@
         }
 
         @media (max-width: 600px) {
-            .links-container {
-                grid-template-columns: 1fr;
+            .link-group {
+                flex: 1 1 100%;
+                max-width: none;
+            }
+            h1 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -2473,6 +2520,10 @@ ${showDateTime ? `
             // Toggle side logo position visibility
             const sideLogoUrl = document.getElementById('sideLogoUrl').value.trim();
             document.getElementById('sideLogoPositionGroup').style.display = sideLogoUrl ? 'block' : 'none';
+
+            // Toggle auto-refresh options visibility
+            const enableAutoRefresh = document.getElementById('enableAutoRefresh').checked;
+            document.getElementById('autoRefreshOptionsGroup').style.display = enableAutoRefresh ? 'block' : 'none';
 
             // Save state to localStorage
             saveState();
@@ -2673,6 +2724,9 @@ Write-Log "Log file: $logFile"
                 document.getElementById('sideLogoPosition').value = config.settings.sideLogoPosition || 'left';
                 document.getElementById('showFooter').checked = config.settings.showFooter !== false;
                 document.getElementById('footerText').value = config.settings.footerText || '';
+                document.getElementById('enableAutoRefresh').checked = config.settings.enableAutoRefresh || false;
+                document.getElementById('autoRefreshDelay').value = config.settings.autoRefreshDelay || '30';
+                document.getElementById('autoRefreshUrl').value = config.settings.autoRefreshUrl || '';
             }
 
             // Apply theme

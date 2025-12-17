@@ -1870,14 +1870,15 @@
                     </div>
                     <div class="group-icon-row">
                         <label for="group-icon-${group.id}" class="group-icon-label">Icon:</label>
-                        <input type="url" id="group-icon-${group.id}" value="${escapeHtml(group.icon || '')}"
+                        <input type="text" id="group-icon-${group.id}" value="${escapeHtml(group.icon || '')}"
                                placeholder="Icon URL (optional)"
                                aria-label="Group icon URL"
-                               onchange="updateGroupIcon(${group.id}, this.value)">
+                               oninput="updateGroupIcon(${group.id}, this.value)">
                         <label for="group-icon-upload-${group.id}" class="btn btn-secondary btn-sm upload-btn" title="Upload SVG">
                             SVG
                             <input type="file" id="group-icon-upload-${group.id}" accept=".svg,image/svg+xml" onchange="handleGroupIconUpload(${group.id}, this)" class="visually-hidden">
                         </label>
+                        ${group.icon ? `<img src="${escapeHtml(group.icon)}" alt="" style="width:20px;height:20px;">` : ''}
                         <button type="button" class="btn btn-sm" onclick="clearGroupIcon(${group.id})" aria-label="Clear icon" title="Clear">✕</button>
                     </div>
                     <div class="group-links" role="list" aria-label="Links in ${escapeHtml(group.name) || 'this group'}">

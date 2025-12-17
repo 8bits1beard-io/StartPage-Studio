@@ -321,6 +321,34 @@
             font-weight: 500;
         }
 
+        .group-icon-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--gray-50, #f9fafb);
+            border-bottom: 1px solid var(--gray-300);
+            font-size: 0.875rem;
+        }
+
+        .group-icon-label {
+            font-weight: 500;
+            color: var(--gray-600);
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+
+        .group-icon-row input[type="url"] {
+            flex: 1;
+            padding: 0.375rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .group-icon-row .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
         .group-links {
             padding: 1rem;
             display: flex;
@@ -947,12 +975,12 @@
 
                 <!-- Color Theme -->
                 <section aria-labelledby="theme-heading">
-                    <div class="section-header" id="color-theme-header" onclick="toggleSection('color-theme')" aria-expanded="true" aria-controls="color-theme-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('color-theme')">
+                    <div class="section-header collapsed" id="color-theme-header" onclick="toggleSection('color-theme')" aria-expanded="false" aria-controls="color-theme-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('color-theme')">
                         <h3 id="theme-heading" style="color: var(--true-blue); cursor: pointer;">
                             <span class="collapse-icon">▼</span> Color Theme
                         </h3>
                     </div>
-                    <div class="section-content" id="color-theme-content">
+                    <div class="section-content collapsed" id="color-theme-content">
                     <p id="theme-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
                         Choose a color theme for your landing page.
                     </p>
@@ -1014,12 +1042,12 @@
 
                 <!-- Ungrouped Links -->
                 <section aria-labelledby="ungrouped-heading">
-                    <div class="section-header" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="true" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('ungrouped-links')">
+                    <div class="section-header collapsed" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="false" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('ungrouped-links')">
                         <h3 id="ungrouped-heading" style="color: var(--true-blue); cursor: pointer;">
                             <span class="collapse-icon">▼</span> Ungrouped Links
                         </h3>
                     </div>
-                    <div class="section-content" id="ungrouped-links-content">
+                    <div class="section-content collapsed" id="ungrouped-links-content">
                     <p id="ungrouped-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
                         Links here will appear without a group heading.
                     </p>
@@ -1276,6 +1304,53 @@
             document.getElementById(inputId).value = '';
             updatePreview();
             announce(`${logoType === 'top' ? 'Top' : 'Side'} logo cleared`);
+        }
+
+        // Update group icon
+        function updateGroupIcon(groupId, value) {
+            const group = groups.find(g => g.id === groupId);
+            if (group) {
+                group.icon = value;
+                updatePreview();
+            }
+        }
+
+        // Handle group icon SVG upload
+        function handleGroupIconUpload(groupId, input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (!file.type.includes('svg')) {
+                alert('Please upload an SVG file.');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const svgContent = e.target.result;
+                const dataUri = 'data:image/svg+xml,' + encodeURIComponent(svgContent);
+                const group = groups.find(g => g.id === groupId);
+                if (group) {
+                    group.icon = dataUri;
+                    document.getElementById(`group-icon-${groupId}`).value = dataUri;
+                    updatePreview();
+                    announce('Group icon uploaded');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        // Clear group icon
+        function clearGroupIcon(groupId) {
+            const group = groups.find(g => g.id === groupId);
+            if (group) {
+                group.icon = '';
+                document.getElementById(`group-icon-${groupId}`).value = '';
+                updatePreview();
+                announce('Group icon cleared');
+            }
         }
 
         // Generate Windows app dropdown options HTML
@@ -1767,6 +1842,18 @@
                                onchange="updateGroupName(${group.id}, this.value)">
                         <button type="button" class="btn btn-danger btn-sm" onclick="removeGroup(${group.id})" aria-label="Remove group ${escapeHtml(group.name) || groupIndex + 1}">Remove</button>
                     </div>
+                    <div class="group-icon-row">
+                        <label for="group-icon-${group.id}" class="group-icon-label">Icon:</label>
+                        <input type="url" id="group-icon-${group.id}" value="${escapeHtml(group.icon || '')}"
+                               placeholder="Icon URL (optional)"
+                               aria-label="Group icon URL"
+                               onchange="updateGroupIcon(${group.id}, this.value)">
+                        <label for="group-icon-upload-${group.id}" class="btn btn-secondary btn-sm upload-btn" title="Upload SVG">
+                            SVG
+                            <input type="file" id="group-icon-upload-${group.id}" accept=".svg,image/svg+xml" onchange="handleGroupIconUpload(${group.id}, this)" class="visually-hidden">
+                        </label>
+                        <button type="button" class="btn btn-sm" onclick="clearGroupIcon(${group.id})" aria-label="Clear icon" title="Clear">✕</button>
+                    </div>
                     <div class="group-links" role="list" aria-label="Links in ${escapeHtml(group.name) || 'this group'}">
                         ${group.links.length === 0 ? '<p class="empty-message" role="listitem">No links in this group</p>' : ''}
                         ${group.links.map((link, linkIndex) => `
@@ -1873,9 +1960,12 @@
                     if (validLinks.length === 0) return '';
 
                     const groupId = group.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    const groupIconHtml = group.icon ? `<img class="group-icon" src="${escapeHtml(group.icon)}" alt="">` : '';
                     return `
             <section class="link-group" aria-labelledby="${groupId}-heading">
-                <h2 id="${groupId}-heading" class="group-heading">${escapeHtml(group.name)}</h2>
+                <div class="group-heading-row">
+                    ${groupIconHtml}<h2 id="${groupId}-heading" class="group-heading">${escapeHtml(group.name)}</h2>
+                </div>
                 <ul class="links-list">
                     ${validLinks.map(link => `
                     <li><a href="${escapeHtml(link.url)}" class="link-button">${escapeHtml(link.name)}</a></li>`).join('')}
@@ -1952,6 +2042,7 @@
                 },
                 groups: groups.map(g => ({
                     name: g.name,
+                    icon: g.icon || '',
                     links: g.links.map(l => ({ name: l.name, url: l.url }))
                 })),
                 ungroupedLinks: ungroupedLinks.map(l => ({ name: l.name, url: l.url }))
@@ -2160,15 +2251,28 @@
             padding: 1.25rem;
         }
 
+        .group-heading-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .group-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
         .group-heading {
             font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--accent-color);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            margin: 0;
         }
 
         .links-list {
@@ -2587,6 +2691,7 @@ Write-Log "Log file: $logFile"
                 groups = config.groups.map(g => ({
                     id: groupIdCounter++,
                     name: g.name,
+                    icon: g.icon || '',
                     links: g.links.map(l => ({
                         id: linkIdCounter++,
                         name: l.name,

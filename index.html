@@ -1979,7 +1979,9 @@
             if (validUngrouped.length > 0) {
                 linksHTML += `
             <section class="link-group" aria-labelledby="links-heading">
-                <h2 id="links-heading" class="group-heading">Quick Links</h2>
+                <div class="group-heading-row">
+                    <h2 id="links-heading" class="group-heading">Quick Links</h2>
+                </div>
                 <ul class="links-list">
                     ${validUngrouped.map(link => `
                     <li><a href="${escapeHtml(link.url)}" class="link-button">${escapeHtml(link.name)}</a></li>`).join('')}

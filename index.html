@@ -18,6 +18,7 @@
             <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#9d8cff"/>
         </svg>
         <h1>Landing Page Studio</h1>
+        <span id="saveIndicator" class="save-indicator" aria-live="polite"></span>
     </header>
 
     <main id="main-content" class="container" role="main">
@@ -27,10 +28,10 @@
             <div class="panel-body editor-scroll">
                 <!-- Tab Navigation -->
                 <nav class="tab-nav" role="tablist">
-                    <button type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-page" onclick="switchTab('page')">Page</button>
-                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-theme" onclick="switchTab('theme')">Theme</button>
-                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-links" onclick="switchTab('links')">Links</button>
-                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-export" onclick="switchTab('export')">Export</button>
+                    <button type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-page" tabindex="0" onclick="switchTab('page')" onkeydown="handleTabKeydown(event)">Page</button>
+                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-theme" tabindex="-1" onclick="switchTab('theme')" onkeydown="handleTabKeydown(event)">Theme</button>
+                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-links" tabindex="-1" onclick="switchTab('links')" onkeydown="handleTabKeydown(event)">Links</button>
+                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-export" tabindex="-1" onclick="switchTab('export')" onkeydown="handleTabKeydown(event)">Export</button>
                 </nav>
 
                 <!-- Page Tab -->
@@ -39,12 +40,12 @@
                     <legend class="visually-hidden">Page Settings</legend>
                     <div class="form-group">
                         <label for="pageTitle">Page Title <small>(browser tab)</small></label>
-                        <input type="text" id="pageTitle" value="Quick Links" oninput="updatePreview()">
+                        <input type="text" id="pageTitle" value="Quick Links" oninput="debouncedUpdatePreview()">
                     </div>
 
                     <div class="form-group">
                         <label for="greeting">Greeting Text</label>
-                        <input type="text" id="greeting" value="Welcome" oninput="updatePreview()">
+                        <input type="text" id="greeting" value="Welcome" oninput="debouncedUpdatePreview()">
                     </div>
 
                     <div class="form-group">
@@ -100,7 +101,7 @@
                     <div class="form-group">
                         <label for="topLogoUrl">Main Logo <small>(above greeting text)</small></label>
                         <div class="logo-input-row">
-                            <input type="url" id="topLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
+                            <input type="url" id="topLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="debouncedUpdatePreview()">
                             <label for="topLogoUpload" class="btn btn-secondary btn-sm upload-btn">
                                 Upload SVG
                                 <input type="file" id="topLogoUpload" accept=".svg,image/svg+xml" onchange="handleLogoUpload('top', this)" class="visually-hidden">
@@ -112,7 +113,7 @@
                     <div class="form-group">
                         <label for="sideLogoUrl">Small Logo</label>
                         <div class="logo-input-row">
-                            <input type="url" id="sideLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
+                            <input type="url" id="sideLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="debouncedUpdatePreview()">
                             <label for="sideLogoUpload" class="btn btn-secondary btn-sm upload-btn">
                                 Upload SVG
                                 <input type="file" id="sideLogoUpload" accept=".svg,image/svg+xml" onchange="handleLogoUpload('side', this)" class="visually-hidden">
@@ -145,7 +146,7 @@
 
                     <div class="form-group" id="footerTextGroup">
                         <label for="footerText">Footer Text</label>
-                        <input type="text" id="footerText" value="" oninput="updatePreview()">
+                        <input type="text" id="footerText" value="" oninput="debouncedUpdatePreview()">
                     </div>
 
                     <div class="form-group">
@@ -159,18 +160,18 @@
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                             <div style="flex: 0 0 auto;">
                                 <label for="autoRefreshDelay">Delay (seconds)</label>
-                                <input type="number" id="autoRefreshDelay" value="30" min="1" max="3600" style="width: 80px;" oninput="updatePreview()">
+                                <input type="number" id="autoRefreshDelay" value="30" min="1" max="3600" style="width: 80px;" oninput="debouncedUpdatePreview()">
                             </div>
                             <div style="flex: 1; min-width: 200px;">
                                 <label for="autoRefreshUrl">Redirect URL</label>
-                                <input type="url" id="autoRefreshUrl" value="" placeholder="https://example.com" oninput="updatePreview()">
+                                <input type="url" id="autoRefreshUrl" value="" placeholder="https://example.com" oninput="debouncedUpdatePreview()">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="scriptName">Script Name <small>(used in filename)</small></label>
-                        <input type="text" id="scriptName" value="MyLandingPage" placeholder="MyLandingPage" oninput="updatePreview()">
+                        <input type="text" id="scriptName" value="MyLandingPage" placeholder="MyLandingPage" oninput="debouncedUpdatePreview()">
                     </div>
 
                     <div class="form-group">
@@ -238,7 +239,7 @@
 
                 <!-- Standalone Links -->
                 <section aria-labelledby="ungrouped-heading">
-                    <div class="section-header" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="true" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('ungrouped-links')">
+                    <div class="section-header" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="true" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSection('ungrouped-links')}">
                         <h3 id="ungrouped-heading" style="color: var(--primary); cursor: pointer;">
                             <span class="collapse-icon">&#9660;</span> Standalone Links
                         </h3>

@@ -1,8 +1,32 @@
+// Default values
+const DEFAULTS = {
+    theme: 'monochrome',
+    customColors: { primary: '#0053E2', accent: '#FFC220' },
+    pageTitle: 'Quick Links',
+    greeting: 'Welcome',
+    computerNamePosition: 'top-right',
+    dateTimeFormat: 'both',
+    dateTimePosition: 'top-left',
+    sideLogoPosition: 'left',
+    autoRefreshDelay: '30',
+    destinationPath: 'C:\\ProgramData\\LandingPage\\index.html',
+    scriptName: 'MyLandingPage'
+};
+
 // State management
 let groups = [];
 let ungroupedLinks = [];
 let groupIdCounter = 0;
 let linkIdCounter = 0;
+let saveIndicatorTimeout = null;
+let debounceTimer = null;
+let modalTriggerElement = null;
+
+// Debounced update preview for input events
+function debouncedUpdatePreview() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updatePreview, 150);
+}
 
 // Tab switching
 function switchTab(tabName) {
@@ -11,11 +35,39 @@ function switchTab(tabName) {
         const isActive = btn.getAttribute('aria-controls') === 'tab-' + tabName;
         btn.classList.toggle('active', isActive);
         btn.setAttribute('aria-selected', isActive);
+        btn.setAttribute('tabindex', isActive ? '0' : '-1');
     });
     // Update panels
     document.querySelectorAll('.tab-panel').forEach(panel => {
         panel.classList.toggle('active', panel.id === 'tab-' + tabName);
     });
+}
+
+// Arrow key navigation for tabs
+function handleTabKeydown(event) {
+    const tabs = ['page', 'theme', 'links', 'export'];
+    const currentTab = event.target.getAttribute('aria-controls').replace('tab-', '');
+    const currentIndex = tabs.indexOf(currentTab);
+    let newIndex;
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        newIndex = (currentIndex + 1) % tabs.length;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (event.key === 'Home') {
+        event.preventDefault();
+        newIndex = 0;
+    } else if (event.key === 'End') {
+        event.preventDefault();
+        newIndex = tabs.length - 1;
+    } else {
+        return;
+    }
+
+    switchTab(tabs[newIndex]);
+    document.querySelector(`[aria-controls="tab-${tabs[newIndex]}"]`).focus();
 }
 
 // Validate that no two elements share the same corner position
@@ -98,8 +150,8 @@ const themes = {
     synthwave: { name: 'Synthwave', primary: '#be185d', accent: '#22d3ee' },
     corporate: { name: 'Corporate', primary: '#1e3a8a', accent: '#9ca3af' }
 };
-let selectedTheme = 'monochrome';
-let customColors = { primary: '#0053E2', accent: '#FFC220' };
+let selectedTheme = DEFAULTS.theme;
+let customColors = { ...DEFAULTS.customColors };
 
 // Get active colors based on selected theme
 function getActiveColors() {
@@ -376,9 +428,25 @@ function saveState() {
     };
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        showSaveIndicator();
     } catch (e) {
         console.warn('Could not save state to localStorage:', e);
+        showSaveIndicator('Save failed');
     }
+}
+
+// Show save indicator briefly
+function showSaveIndicator(message = 'Saved') {
+    const indicator = document.getElementById('saveIndicator');
+    if (!indicator) return;
+
+    clearTimeout(saveIndicatorTimeout);
+    indicator.textContent = message;
+    indicator.classList.add('visible');
+
+    saveIndicatorTimeout = setTimeout(() => {
+        indicator.classList.remove('visible');
+    }, 1500);
 }
 
 // Load state from localStorage
@@ -730,6 +798,8 @@ function renderGroups() {
                         <input type="text" id="link-name-${group.id}-${link.id}" value="${escapeHtml(link.name)}"
                                placeholder="Display name"
                                aria-label="Link display name"
+                               class="${!link.name ? 'empty-warning' : ''}"
+                               title="${!link.name ? 'Empty names will not appear in the generated page' : ''}"
                                onchange="updateGroupLink(${group.id}, ${link.id}, 'name', this.value)">
                         ${(link.type || 'web') === 'web' ? `
                         <input type="url" id="link-url-${group.id}-${link.id}" value="${escapeHtml(link.url || '')}"
@@ -778,6 +848,8 @@ function renderUngroupedLinks() {
             <input type="text" id="ungrouped-name-${link.id}" value="${escapeHtml(link.name)}"
                    placeholder="Display name"
                    aria-label="Link display name"
+                   class="${!link.name ? 'empty-warning' : ''}"
+                   title="${!link.name ? 'Empty names will not appear in the generated page' : ''}"
                    onchange="updateUngroupedLink(${link.id}, 'name', this.value)">
             ${(link.type || 'web') === 'web' ? `
             <input type="url" id="ungrouped-url-${link.id}" value="${escapeHtml(link.url || '')}"
@@ -1166,7 +1238,7 @@ function generateHTML(useComputerNameVariable = false) {
         }
 
         .top-logo {
-            width: 240px;
+            width: 480px;
             height: auto;
         }
 
@@ -1558,6 +1630,9 @@ Write-Log "Log file: $logFile"
 
 // Show instruction modal
 function showInstructionModal() {
+    // Save the element that triggered the modal for focus restoration
+    modalTriggerElement = document.activeElement;
+
     const showComputerName = document.getElementById('showComputerName').checked;
     const scriptName = document.getElementById('scriptName').value || 'MyLandingPage';
     const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -1595,6 +1670,11 @@ function showInstructionModal() {
 // Close modal
 function closeModal() {
     document.getElementById('instructionModal').classList.remove('visible');
+    // Restore focus to the element that triggered the modal
+    if (modalTriggerElement && typeof modalTriggerElement.focus === 'function') {
+        modalTriggerElement.focus();
+        modalTriggerElement = null;
+    }
 }
 
 // Close modal on Escape key or click outside
@@ -1773,33 +1853,33 @@ function resetAll() {
     ungroupedLinks = [];
     groupIdCounter = 0;
     linkIdCounter = 0;
-    selectedTheme = 'monochrome';
-    customColors = { primary: '#1a1a2e', accent: '#e94560' };
+    selectedTheme = DEFAULTS.theme;
+    customColors = { ...DEFAULTS.customColors };
 
     // Reset form fields to defaults
-    document.getElementById('pageTitle').value = 'Quick Links';
-    document.getElementById('greeting').value = 'Welcome';
+    document.getElementById('pageTitle').value = DEFAULTS.pageTitle;
+    document.getElementById('greeting').value = DEFAULTS.greeting;
     document.getElementById('showComputerName').checked = true;
-    document.getElementById('computerNamePosition').value = 'top-right';
+    document.getElementById('computerNamePosition').value = DEFAULTS.computerNamePosition;
     document.getElementById('showDateTime').checked = false;
-    document.getElementById('dateTimeFormat').value = 'both';
-    document.getElementById('dateTimePosition').value = 'top-left';
+    document.getElementById('dateTimeFormat').value = DEFAULTS.dateTimeFormat;
+    document.getElementById('dateTimePosition').value = DEFAULTS.dateTimePosition;
     document.getElementById('topLogoUrl').value = '';
     document.getElementById('sideLogoUrl').value = '';
-    document.getElementById('sideLogoPosition').value = 'left';
+    document.getElementById('sideLogoPosition').value = DEFAULTS.sideLogoPosition;
     document.getElementById('showFooter').checked = true;
     document.getElementById('footerText').value = '';
     document.getElementById('enableAutoRefresh').checked = false;
-    document.getElementById('autoRefreshDelay').value = '30';
+    document.getElementById('autoRefreshDelay').value = DEFAULTS.autoRefreshDelay;
     document.getElementById('autoRefreshUrl').value = '';
-    document.getElementById('scriptName').value = 'MyLandingPage';
-    document.getElementById('destinationPath').value = 'C:\\ProgramData\\LandingPage\\index.html';
+    document.getElementById('scriptName').value = DEFAULTS.scriptName;
+    document.getElementById('destinationPath').value = DEFAULTS.destinationPath;
 
     // Reset custom color inputs
-    document.getElementById('customPrimary').value = '#1a1a2e';
-    document.getElementById('customPrimaryPicker').value = '#1a1a2e';
-    document.getElementById('customAccent').value = '#e94560';
-    document.getElementById('customAccentPicker').value = '#e94560';
+    document.getElementById('customPrimary').value = DEFAULTS.customColors.primary;
+    document.getElementById('customPrimaryPicker').value = DEFAULTS.customColors.primary;
+    document.getElementById('customAccent').value = DEFAULTS.customColors.accent;
+    document.getElementById('customAccentPicker').value = DEFAULTS.customColors.accent;
 
     // Re-render
     renderThemeSwatches();

@@ -69,6 +69,18 @@ header h1 {
     font-weight: 600;
 }
 
+.save-indicator {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.save-indicator.visible {
+    opacity: 1;
+}
+
 .container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -130,6 +142,11 @@ select {
     transition: border-color 0.2s, box-shadow 0.2s;
     background-color: var(--bg-input);
     color: var(--text-primary);
+}
+
+input.empty-warning {
+    border-color: var(--danger);
+    background-color: rgba(255, 107, 107, 0.1);
 }
 
 input[type="text"]:focus,

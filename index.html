@@ -7,19 +7,21 @@
     <title>StartPage Studio</title>
     <style>
         :root {
-            --true-blue: #0053E2;
-            --true-blue-dark: #003da8;
-            --spark-yellow: #FFC220;
-            --spark-yellow-dark: #e6af1c;
+            --primary: #9d8cff;
+            --primary-dark: #7a6bdb;
+            --accent: #64d2ff;
+            --accent-dark: #4fb8e6;
             --white: #FFFFFF;
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
-            --gray-300: #dee2e6;
-            --gray-600: #6c757d;
-            --gray-800: #343a40;
-            --danger: #dc3545;
-            --danger-dark: #c82333;
-            --focus-ring: 0 0 0 3px rgba(0, 83, 226, 0.5);
+            --bg-body: #1e1e2a;
+            --bg-panel: #2d2d3a;
+            --bg-input: #3d3d4a;
+            --bg-hover: #4d4d5a;
+            --border: #4d4d5a;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --danger: #ff6b6b;
+            --danger-dark: #e55a5a;
+            --focus-ring: 0 0 0 3px rgba(157, 140, 255, 0.5);
         }
 
         * {
@@ -30,8 +32,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gray-100);
-            color: var(--gray-800);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
@@ -40,8 +42,8 @@
             position: absolute;
             top: -50px;
             left: 0;
-            background: var(--spark-yellow);
-            color: var(--gray-800);
+            background: var(--accent);
+            color: var(--bg-body);
             padding: 0.75rem 1.5rem;
             z-index: 1000;
             font-weight: 600;
@@ -51,17 +53,18 @@
 
         .skip-link:focus {
             top: 0;
-            outline: 3px solid var(--true-blue);
+            outline: 3px solid var(--primary);
             outline-offset: 2px;
         }
 
         header {
-            background-color: var(--true-blue);
-            color: var(--white);
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
             padding: 1.5rem 2rem;
             display: flex;
             align-items: center;
             gap: 1rem;
+            border-bottom: 1px solid var(--border);
         }
 
         header svg {
@@ -90,17 +93,19 @@
         }
 
         .panel {
-            background: var(--white);
+            background: var(--bg-panel);
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .panel-header {
-            background: var(--gray-200);
+            background: var(--bg-input);
             padding: 1rem 1.5rem;
             font-weight: 600;
-            border-bottom: 1px solid var(--gray-300);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
         }
 
         .panel-body {
@@ -119,38 +124,42 @@
             display: block;
             font-weight: 500;
             margin-bottom: 0.5rem;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         label small {
             font-weight: 400;
-            color: var(--gray-600);
+            color: var(--text-secondary);
         }
 
         input[type="text"],
         input[type="url"],
+        input[type="number"],
         select {
             width: 100%;
             padding: 0.625rem 0.875rem;
-            border: 1px solid var(--gray-300);
+            border: 1px solid var(--border);
             border-radius: 4px;
             font-size: 1rem;
             transition: border-color 0.2s, box-shadow 0.2s;
-            background-color: var(--white);
+            background-color: var(--bg-input);
+            color: var(--text-primary);
         }
 
         input[type="text"]:focus,
         input[type="url"]:focus,
+        input[type="number"]:focus,
         select:focus {
             outline: none;
-            border-color: var(--true-blue);
+            border-color: var(--primary);
             box-shadow: var(--focus-ring);
         }
 
         input[type="text"]:focus-visible,
         input[type="url"]:focus-visible,
+        input[type="number"]:focus-visible,
         select:focus-visible {
-            outline: 3px solid var(--true-blue);
+            outline: 3px solid var(--primary);
             outline-offset: 1px;
         }
 
@@ -164,11 +173,11 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
-            accent-color: var(--true-blue);
+            accent-color: var(--primary);
         }
 
         .checkbox-group input[type="checkbox"]:focus-visible {
-            outline: 3px solid var(--true-blue);
+            outline: 3px solid var(--primary);
             outline-offset: 2px;
         }
 
@@ -195,30 +204,31 @@
         }
 
         .btn:focus-visible {
-            outline: 3px solid var(--true-blue);
+            outline: 3px solid var(--primary);
             outline-offset: 2px;
         }
 
         .btn-primary {
-            background-color: var(--true-blue);
-            color: var(--white);
+            background-color: var(--primary);
+            color: var(--bg-body);
         }
 
         .btn-primary:hover {
-            background-color: var(--true-blue-dark);
+            background-color: var(--primary-dark);
         }
 
         .btn-primary:focus-visible {
-            outline-color: var(--spark-yellow);
+            outline-color: var(--accent);
         }
 
         .btn-secondary {
-            background-color: var(--gray-200);
-            color: var(--gray-800);
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background-color: var(--gray-300);
+            background-color: var(--bg-hover);
         }
 
         .btn-danger {
@@ -242,8 +252,8 @@
         }
 
         .btn-generate {
-            background-color: var(--spark-yellow);
-            color: var(--gray-800);
+            background-color: var(--accent);
+            color: var(--bg-body);
             font-weight: 600;
             padding: 0.875rem 2rem;
             font-size: 1rem;
@@ -251,11 +261,11 @@
         }
 
         .btn-generate:hover {
-            background-color: var(--spark-yellow-dark);
+            background-color: var(--accent-dark);
         }
 
         .btn-generate:focus-visible {
-            outline-color: var(--true-blue);
+            outline-color: var(--primary);
         }
 
         /* Reduced motion preference */
@@ -300,11 +310,12 @@
         }
 
         .group-card {
-            border: 1px solid var(--gray-300);
+            border: 1px solid var(--border);
             border-radius: 6px;
             overflow: hidden;
             padding: 0;
             margin: 0;
+            background: var(--bg-input);
         }
 
         .group-header {
@@ -312,8 +323,8 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem 1rem;
-            background: var(--gray-100);
-            border-bottom: 1px solid var(--gray-300);
+            background: var(--bg-hover);
+            border-bottom: 1px solid var(--border);
         }
 
         .group-header input {
@@ -326,14 +337,14 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: var(--gray-50, #f9fafb);
-            border-bottom: 1px solid var(--gray-300);
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border);
             font-size: 0.875rem;
         }
 
         .group-icon-label {
             font-weight: 500;
-            color: var(--gray-600);
+            color: var(--text-secondary);
             margin-bottom: 0;
             white-space: nowrap;
         }
@@ -384,7 +395,7 @@
         .drag-handle {
             cursor: grab;
             padding: 0.25rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
             font-size: 1rem;
             user-select: none;
             display: flex;
@@ -398,16 +409,16 @@
         .group-card.dragging,
         .link-row.dragging {
             opacity: 0.5;
-            background: var(--gray-200);
+            background: var(--bg-hover);
         }
 
         .group-card.drag-over {
-            border: 2px dashed var(--true-blue);
-            background: #e7f1ff;
+            border: 2px dashed var(--primary);
+            background: rgba(157, 140, 255, 0.1);
         }
 
         .link-row.drag-over {
-            border-top: 2px solid var(--true-blue);
+            border-top: 2px solid var(--primary);
         }
 
         /* Collapsible sections */
@@ -435,7 +446,7 @@
         .collapse-icon {
             font-size: 0.75rem;
             transition: transform 0.2s ease;
-            color: var(--gray-600);
+            color: var(--text-secondary);
         }
 
         .section-header.collapsed .collapse-icon {
@@ -466,11 +477,11 @@
         /* Input validation */
         input.invalid {
             border-color: var(--danger);
-            background-color: #fff5f5;
+            background-color: rgba(255, 107, 107, 0.1);
         }
 
         input.invalid:focus {
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
         }
 
         .validation-error {
@@ -485,7 +496,7 @@
         }
 
         .empty-message {
-            color: var(--gray-600);
+            color: var(--text-secondary);
             font-style: italic;
             text-align: center;
             padding: 1rem;
@@ -505,7 +516,7 @@
         }
 
         .preview-frame {
-            background: var(--true-blue);
+            background: var(--bg-input);
             border-radius: 6px;
             min-height: 500px;
             overflow: hidden;
@@ -532,12 +543,12 @@
 
         /* Info text */
         .info-text {
-            background: #e7f1ff;
-            border: 1px solid #b6d4fe;
+            background: rgba(157, 140, 255, 0.15);
+            border: 1px solid var(--primary);
             border-radius: 4px;
             padding: 0.75rem 1rem;
             font-size: 0.875rem;
-            color: #084298;
+            color: var(--primary);
             margin-bottom: 1rem;
         }
 
@@ -550,7 +561,7 @@
         footer {
             text-align: center;
             padding: 1.5rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
             font-size: 0.875rem;
         }
 
@@ -567,7 +578,7 @@
             height: 50px;
             border-radius: 6px;
             cursor: pointer;
-            border: 3px solid var(--gray-300);
+            border: 3px solid var(--border);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -575,16 +586,16 @@
         }
 
         .theme-swatch:hover {
-            border-color: var(--gray-600);
+            border-color: var(--text-secondary);
         }
 
         .theme-swatch.selected {
-            border-color: var(--true-blue);
+            border-color: var(--primary);
             box-shadow: var(--focus-ring);
         }
 
         .theme-swatch:focus-visible {
-            outline: 3px solid var(--true-blue);
+            outline: 3px solid var(--primary);
             outline-offset: 2px;
         }
 
@@ -612,7 +623,7 @@
 
         .swatch-label {
             font-size: 0.75rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
             text-align: center;
             margin-top: 0.25rem;
         }
@@ -629,7 +640,7 @@
             gap: 1rem;
             flex-wrap: wrap;
             padding: 1rem;
-            background: var(--gray-100);
+            background: var(--bg-input);
             border-radius: 6px;
             margin-top: 0.5rem;
         }
@@ -659,7 +670,7 @@
             width: 40px;
             height: 40px;
             padding: 0;
-            border: 1px solid var(--gray-300);
+            border: 1px solid var(--border);
             border-radius: 4px;
             cursor: pointer;
         }
@@ -688,23 +699,23 @@
         .logo-input-row .btn-sm:last-child {
             padding: 0.375rem 0.5rem;
             font-size: 0.75rem;
-            background: var(--gray-100);
-            color: var(--gray-600);
+            background: var(--bg-input);
+            color: var(--text-secondary);
         }
 
         .logo-input-row .btn-sm:last-child:hover {
-            background: var(--gray-200);
-            color: var(--gray-800);
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
 
         .custom-warning {
             display: none;
-            background: #fff3cd;
+            background: rgba(255, 193, 7, 0.15);
             border: 1px solid #ffc107;
             border-radius: 4px;
             padding: 0.75rem 1rem;
             font-size: 0.875rem;
-            color: #856404;
+            color: #ffc107;
             margin-top: 0.5rem;
         }
 
@@ -737,22 +748,24 @@
         }
 
         .modal {
-            background: var(--white);
+            background: var(--bg-panel);
             border-radius: 8px;
             max-width: 550px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
         }
 
         .modal-header {
-            background: var(--true-blue);
-            color: var(--white);
+            background: var(--bg-input);
+            color: var(--text-primary);
             padding: 1rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-bottom: 1px solid var(--border);
         }
 
         .modal-header h2 {
@@ -763,7 +776,7 @@
         .modal-close {
             background: transparent;
             border: none;
-            color: var(--white);
+            color: var(--text-primary);
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem;
@@ -776,10 +789,11 @@
 
         .modal-body {
             padding: 1.5rem;
+            color: var(--text-primary);
         }
 
         .modal-body h3 {
-            color: var(--true-blue);
+            color: var(--primary);
             margin-bottom: 0.75rem;
             font-size: 1rem;
         }
@@ -795,7 +809,7 @@
         }
 
         .modal-body code {
-            background: var(--gray-200);
+            background: var(--bg-input);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'Consolas', 'Monaco', monospace;
@@ -804,8 +818,8 @@
         }
 
         .modal-body .code-block {
-            background: var(--gray-800);
-            color: var(--spark-yellow);
+            background: var(--bg-body);
+            color: var(--accent);
             padding: 0.75rem 1rem;
             border-radius: 4px;
             font-family: 'Consolas', 'Monaco', monospace;
@@ -816,7 +830,7 @@
 
         .modal-footer {
             padding: 1rem 1.5rem;
-            border-top: 1px solid var(--gray-300);
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: flex-end;
         }
@@ -824,7 +838,7 @@
         /* Tab styles */
         .tab-nav {
             display: flex;
-            border-bottom: 2px solid var(--gray-300);
+            border-bottom: 2px solid var(--border);
             margin-bottom: 1rem;
             gap: 0;
         }
@@ -838,19 +852,19 @@
             margin-bottom: -2px;
             font-size: 0.875rem;
             font-weight: 600;
-            color: var(--gray-600);
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .tab-btn:hover {
-            color: var(--true-blue);
-            background: var(--gray-50);
+            color: var(--primary);
+            background: var(--bg-input);
         }
 
         .tab-btn.active {
-            color: var(--true-blue);
-            border-bottom-color: var(--true-blue);
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
         .tab-panel {
@@ -867,10 +881,10 @@
 
     <header role="banner">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StartPage Studio logo">
-            <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#FFC220"/>
-            <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#FFC220"/>
-            <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#FFC220"/>
-            <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#FFC220"/>
+            <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#9d8cff"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#64d2ff"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#64d2ff"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#9d8cff"/>
         </svg>
         <h1>StartPage Studio</h1>
     </header>
@@ -1023,7 +1037,7 @@
                 <!-- Theme Tab -->
                 <div id="tab-theme" class="tab-panel" role="tabpanel">
                 <section aria-labelledby="theme-heading">
-                    <p id="theme-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
+                    <p id="theme-description" style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
                         Choose a color theme for your landing page.
                     </p>
 
@@ -1058,8 +1072,8 @@
                 <div id="tab-links" class="tab-panel" role="tabpanel">
                 <!-- Link Groups -->
                 <section aria-labelledby="groups-heading">
-                    <h3 id="groups-heading" style="color: var(--true-blue); margin-bottom: 0.5rem;">Link Groups</h3>
-                    <p id="groups-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
+                    <h3 id="groups-heading" style="color: var(--primary); margin-bottom: 0.5rem;">Link Groups</h3>
+                    <p id="groups-description" style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
                         Organize links into groups with headings.
                     </p>
 
@@ -1075,17 +1089,17 @@
                     </div>
                 </section>
 
-                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-300);">
+                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
 
                 <!-- Standalone Links -->
                 <section aria-labelledby="ungrouped-heading">
                     <div class="section-header" id="ungrouped-links-header" onclick="toggleSection('ungrouped-links')" aria-expanded="true" aria-controls="ungrouped-links-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('ungrouped-links')">
-                        <h3 id="ungrouped-heading" style="color: var(--true-blue); cursor: pointer;">
+                        <h3 id="ungrouped-heading" style="color: var(--primary); cursor: pointer;">
                             <span class="collapse-icon">▼</span> Standalone Links
                         </h3>
                     </div>
                     <div class="section-content" id="ungrouped-links-content">
-                    <p id="ungrouped-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
+                    <p id="ungrouped-description" style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
                         Links here appear without a group heading.
                     </p>
 
@@ -1110,27 +1124,27 @@
                         <button type="button" class="btn btn-generate" onclick="downloadScript()">
                             Download PowerShell Script (Recommended)
                         </button>
-                        <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.5rem 0;">
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">
                             Captures computer name at runtime. Deploy via Intune/SCCM.
                         </p>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="downloadHTML()" style="margin-top: 0.5rem;">
                             Download HTML Only
                         </button>
-                        <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
                             For testing. Computer name shows as placeholder.
                         </p>
-                        <hr style="width: 100%; margin: 1rem 0; border: none; border-top: 1px solid var(--gray-300);">
+                        <hr style="width: 100%; margin: 1rem 0; border: none; border-top: 1px solid var(--border);">
                         <label for="importFile" class="btn btn-secondary btn-sm" style="cursor: pointer;">
                             Import Existing Start Page
                             <input type="file" id="importFile" accept=".html,text/html" onchange="importStartPage(this)" class="visually-hidden">
                         </label>
-                        <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
                             Load a previously generated start page to edit.
                         </p>
                         <button type="button" class="btn btn-danger btn-sm" onclick="resetAll()" style="margin-top: 0.75rem;">
                             Reset Everything
                         </button>
-                        <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
                             Clear all settings and start fresh.
                         </p>
                     </div>

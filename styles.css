@@ -72,6 +72,7 @@ header h1 {
 .container {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: start;
     gap: 1.5rem;
     padding: 1.5rem;
     max-width: 1600px;

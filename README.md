@@ -1,4 +1,4 @@
-# StartPage Studio
+# Landing Page Studio
 
 **Author:** Joshua Walderbach
 
@@ -16,7 +16,7 @@
 - **Drag-and-Drop** - Reorder groups and links by dragging
 - **Local App Shortcuts** - Create .lnk shortcuts for local applications
 - **Auto-Redirect** - Optionally redirect to another page after a delay
-- **Import/Export** - Import previously created start pages for editing
+- **Import/Export** - Import previously created landing pages for editing
 - **WCAG Compliant** - Generated pages meet accessibility standards
 - **Enterprise Ready** - PowerShell scripts for Intune/SCCM deployment
 
@@ -41,6 +41,7 @@
 | Date/Time | Optional live clock (ISO 8601) |
 | Footer | Optional footer text |
 | Auto-Redirect | Redirect to another URL after specified seconds |
+| Script Name | Name used in the PowerShell script filename |
 | Destination Path | Where the landing page saves |
 
 ### Color Themes
@@ -63,9 +64,9 @@ Selecting Walmart auto-populates the Spark logo.
 
 | Option | Use Case |
 |--------|----------|
-| **PowerShell Script** | Enterprise deployment via Intune/SCCM. Captures computer name at runtime. Creates .lnk shortcuts for any app links. |
+| **PowerShell Script** | Enterprise deployment via Intune/SCCM. Filename: `Generate-LandingPage_[ScriptName].ps1`. Captures computer name at runtime. Creates .lnk shortcuts for any app links. |
 | **HTML Only** | Local testing. Computer name shows as placeholder. |
-| **Import Start Page** | Load a previously generated start page to edit. |
+| **Import Landing Page** | Load a previously generated landing page to edit. |
 | **Reset Everything** | Clear all settings and start fresh. |
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for enterprise deployment instructions.
@@ -78,7 +79,7 @@ Edge, Chrome, Firefox, Safari
 
 | File | Purpose |
 |------|---------|
-| `index.html` | StartPage Studio application |
+| `index.html` | Landing Page Studio application |
 | `README.md` | This documentation |
 | `DEPLOYMENT.md` | Enterprise deployment guide |
 | `CONTRIBUTING.md` | Developer documentation |

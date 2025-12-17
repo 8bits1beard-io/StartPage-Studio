@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="StartPage Studio - Design branded landing pages for kiosks and curated user experiences. Visual editor with live preview and enterprise deployment.">
-    <title>StartPage Studio</title>
+    <meta name="description" content="Landing Page Studio - Design branded landing pages for kiosks and curated user experiences. Visual editor with live preview and enterprise deployment.">
+    <title>Landing Page Studio</title>
     <style>
         :root {
             --primary: #9d8cff;
@@ -880,13 +880,13 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header role="banner">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StartPage Studio logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Landing Page Studio logo">
             <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#9d8cff"/>
             <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#64d2ff"/>
             <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#64d2ff"/>
             <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#9d8cff"/>
         </svg>
-        <h1>StartPage Studio</h1>
+        <h1>Landing Page Studio</h1>
     </header>
 
     <main id="main-content" class="container" role="main">
@@ -1028,8 +1028,13 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="scriptName">Script Name <small>(used in filename)</small></label>
+                        <input type="text" id="scriptName" value="MyLandingPage" placeholder="MyLandingPage" oninput="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
                         <label for="destinationPath">Destination Path <small>(where landing page will be saved)</small></label>
-                        <input type="text" id="destinationPath" value="C:\ProgramData\StartPage\index.html" placeholder="C:\ProgramData\StartPage\index.html">
+                        <input type="text" id="destinationPath" value="C:\ProgramData\LandingPage\index.html" placeholder="C:\ProgramData\LandingPage\index.html">
                     </div>
                 </fieldset>
                 </div>
@@ -1163,7 +1168,7 @@
     </main>
 
     <footer role="contentinfo">
-        <p>StartPage Studio | Author: Joshua Walderbach</p>
+        <p>Landing Page Studio | Author: Joshua Walderbach</p>
     </footer>
 
     <!-- Screen reader announcements -->
@@ -1489,6 +1494,7 @@
                     enableAutoRefresh: document.getElementById('enableAutoRefresh').checked,
                     autoRefreshDelay: document.getElementById('autoRefreshDelay').value,
                     autoRefreshUrl: document.getElementById('autoRefreshUrl').value,
+                    scriptName: document.getElementById('scriptName').value,
                     destinationPath: document.getElementById('destinationPath').value
                 }
             };
@@ -1531,7 +1537,8 @@
                         document.getElementById('enableAutoRefresh').checked = state.settings.enableAutoRefresh || false;
                         document.getElementById('autoRefreshDelay').value = state.settings.autoRefreshDelay || '30';
                         document.getElementById('autoRefreshUrl').value = state.settings.autoRefreshUrl || '';
-                        document.getElementById('destinationPath').value = state.settings.destinationPath || 'C:\\ProgramData\\StartPage\\index.html';
+                        document.getElementById('scriptName').value = state.settings.scriptName || 'MyLandingPage';
+                        document.getElementById('destinationPath').value = state.settings.destinationPath || 'C:\\ProgramData\\LandingPage\\index.html';
 
                         // Restore custom color inputs if custom theme
                         if (selectedTheme === 'custom') {
@@ -2024,7 +2031,7 @@
             // Build configuration object for import/export
             const config = {
                 version: '1.0',
-                generator: 'StartPage Studio',
+                generator: 'Landing Page Studio',
                 settings: {
                     pageTitle,
                     greeting,
@@ -2074,7 +2081,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="StartPage Studio">
+    <meta name="generator" content="Landing Page Studio">
     <meta name="description" content="Quick links landing page">${enableAutoRefresh && autoRefreshUrl ? `
     <meta http-equiv="refresh" content="${autoRefreshDelay};url=${escapeHtml(autoRefreshUrl)}">` : ''}
     <title>${escapeHtml(pageTitle)}</title>
@@ -2444,7 +2451,7 @@ ${showDateTime ? `
         setInterval(updateDateTime, 1000);
     <` + `/script>
 ` : ''}
-<!-- StartPage Studio Config: ${configJson} -->
+<!-- Landing Page Studio Config: ${configJson} -->
 </body>
 </html>`;
         }
@@ -2526,10 +2533,12 @@ ${showDateTime ? `
             // Escape for PowerShell here-string (just need to escape @" and "@ if they appear)
             const escapedHtml = htmlContent.replace(/"@/g, '`"@').replace(/@"/g, '@`"');
 
-            // Get destination path and parse folder
-            const destinationPath = document.getElementById('destinationPath').value || 'C:\\ProgramData\\StartPage\\index.html';
+            // Get script name and destination path
+            const scriptName = document.getElementById('scriptName').value || 'MyLandingPage';
+            const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const destinationPath = document.getElementById('destinationPath').value || 'C:\\ProgramData\\LandingPage\\index.html';
             const escapedDestPath = destinationPath.replace(/\\/g, '\\\\');
-            const folderPath = destinationPath.substring(0, destinationPath.lastIndexOf('\\')) || 'C:\\ProgramData\\StartPage';
+            const folderPath = destinationPath.substring(0, destinationPath.lastIndexOf('\\')) || 'C:\\ProgramData\\LandingPage';
             const escapedFolderPath = folderPath.replace(/\\/g, '\\\\');
 
             // Collect all app links for shortcut creation
@@ -2573,8 +2582,8 @@ Write-Log "Created shortcut: ${escapedName}"
                 });
             }
 
-            return `# Generate-StartPage.ps1
-# Generated by StartPage Studio
+            return `# Generate-LandingPage_${sanitizedScriptName}.ps1
+# Generated by Landing Page Studio
 # Author: Joshua Walderbach
 
 $computerName = $env:COMPUTERNAME
@@ -2582,7 +2591,7 @@ $outputFolder = "${escapedFolderPath}"
 $outputPath = "${escapedDestPath}"
 $logFolder = "${escapedFolderPath}\\Logs"
 $timestamp = Get-Date -Format 'yyyy-MM-ddTHH-mm-ss'
-$logFile = Join-Path $logFolder "Generate-StartPage_$timestamp.log"
+$logFile = Join-Path $logFolder "Generate-LandingPage_${sanitizedScriptName}_$timestamp.log"
 
 # Create directories if they don't exist
 if (-not (Test-Path $outputFolder)) {
@@ -2619,7 +2628,10 @@ Write-Log "Log file: $logFile"
         // Show instruction modal
         function showInstructionModal() {
             const showComputerName = document.getElementById('showComputerName').checked;
-            const destinationPath = document.getElementById('destinationPath').value || 'C:\\ProgramData\\StartPage\\index.html';
+            const scriptName = document.getElementById('scriptName').value || 'MyLandingPage';
+            const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const scriptFilename = `Generate-LandingPage_${sanitizedScriptName}.ps1`;
+            const destinationPath = document.getElementById('destinationPath').value || 'C:\\ProgramData\\LandingPage\\index.html';
 
             let computerNameNote = '';
             if (showComputerName) {
@@ -2630,10 +2642,10 @@ Write-Log "Log file: $logFile"
             modalBody.innerHTML = `
                 <h3>Next Steps</h3>
                 <ol>
-                    <li>Copy <code>Generate-StartPage.ps1</code> to your target computer</li>
+                    <li>Copy <code>${escapeHtml(scriptFilename)}</code> to your target computer</li>
                     <li>Open <strong>Command Prompt</strong> or <strong>PowerShell</strong> as Administrator</li>
                     <li>Run the script:
-                        <div class="code-block">powershell -ExecutionPolicy Bypass -File "Generate-StartPage.ps1"</div>
+                        <div class="code-block">powershell -ExecutionPolicy Bypass -File "${escapeHtml(scriptFilename)}"</div>
                     </li>
                     <li>Open the landing page in your browser:
                         <div class="code-block">${escapeHtml(destinationPath)}</div>
@@ -2670,12 +2682,14 @@ Write-Log "Log file: $logFile"
         // Download PowerShell script
         function downloadScript() {
             if (!validateAllUrls()) return;
+            const scriptName = document.getElementById('scriptName').value || 'MyLandingPage';
+            const sanitizedScriptName = scriptName.replace(/[^a-zA-Z0-9_-]/g, '_');
             const script = generatePowerShellScript();
             const blob = new Blob([script], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Generate-StartPage.ps1';
+            a.download = `Generate-LandingPage_${sanitizedScriptName}.ps1`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2702,7 +2716,7 @@ Write-Log "Log file: $logFile"
             announce('HTML file downloaded');
         }
 
-        // Import existing start page
+        // Import existing landing page
         function importStartPage(input) {
             const file = input.files[0];
             if (!file) return;
@@ -2711,15 +2725,19 @@ Write-Log "Log file: $logFile"
             reader.onload = function(e) {
                 const html = e.target.result;
 
-                // Check for StartPage Studio signature
-                if (!html.includes('<meta name="generator" content="StartPage Studio">')) {
-                    alert('This file was not created by StartPage Studio.\n\nOnly HTML files generated by this tool can be imported.');
+                // Check for Landing Page Studio or StartPage Studio signature (backwards compatible)
+                if (!html.includes('<meta name="generator" content="Landing Page Studio">') &&
+                    !html.includes('<meta name="generator" content="StartPage Studio">')) {
+                    alert('This file was not created by Landing Page Studio.\n\nOnly HTML files generated by this tool can be imported.');
                     input.value = '';
                     return;
                 }
 
-                // Extract config from comment
-                const configMatch = html.match(/<!-- StartPage Studio Config: (.+?) -->/);
+                // Extract config from comment (check both new and old format)
+                let configMatch = html.match(/<!-- Landing Page Studio Config: (.+?) -->/);
+                if (!configMatch) {
+                    configMatch = html.match(/<!-- StartPage Studio Config: (.+?) -->/);
+                }
                 if (!configMatch) {
                     alert('Could not find configuration data in this file.\n\nThe file may have been modified or is from an older version.');
                     input.value = '';
@@ -2729,8 +2747,8 @@ Write-Log "Log file: $logFile"
                 try {
                     const config = JSON.parse(configMatch[1]);
                     applyImportedConfig(config);
-                    announce('Start page imported successfully');
-                    alert('Start page imported successfully!\n\nYou can now edit and re-export it.');
+                    announce('Landing page imported successfully');
+                    alert('Landing page imported successfully!\n\nYou can now edit and re-export it.');
                 } catch (err) {
                     alert('Error parsing configuration data.\n\nThe file may be corrupted.');
                     console.error('Import error:', err);
@@ -2843,7 +2861,8 @@ Write-Log "Log file: $logFile"
             document.getElementById('enableAutoRefresh').checked = false;
             document.getElementById('autoRefreshDelay').value = '30';
             document.getElementById('autoRefreshUrl').value = '';
-            document.getElementById('destinationPath').value = 'C:\\ProgramData\\StartPage\\index.html';
+            document.getElementById('scriptName').value = 'MyLandingPage';
+            document.getElementById('destinationPath').value = 'C:\\ProgramData\\LandingPage\\index.html';
 
             // Reset custom color inputs
             document.getElementById('customPrimary').value = '#1a1a2e';

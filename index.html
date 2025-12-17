@@ -1110,6 +1110,12 @@
                         <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
                             Load a previously generated start page to edit.
                         </p>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="resetAll()" style="margin-top: 0.75rem;">
+                            Reset Everything
+                        </button>
+                        <p style="font-size: 0.75rem; color: var(--gray-600); margin: 0.25rem 0 0 0;">
+                            Clear all settings and start fresh.
+                        </p>
                     </div>
                 </section>
             </div>
@@ -2770,6 +2776,57 @@ Write-Log "Log file: $logFile"
 
             updatePreview();
             saveState();
+        }
+
+        // Reset everything to defaults
+        function resetAll() {
+            if (!confirm('Are you sure you want to reset everything?\n\nThis will clear all your settings, groups, and links. This cannot be undone.')) {
+                return;
+            }
+
+            // Clear localStorage
+            localStorage.removeItem(STORAGE_KEY);
+
+            // Reset state variables
+            groups = [];
+            ungroupedLinks = [];
+            groupIdCounter = 0;
+            linkIdCounter = 0;
+            selectedTheme = 'monochrome';
+            customColors = { primary: '#1a1a2e', accent: '#e94560' };
+
+            // Reset form fields to defaults
+            document.getElementById('pageTitle').value = 'Quick Links';
+            document.getElementById('greeting').value = 'Welcome';
+            document.getElementById('showComputerName').checked = true;
+            document.getElementById('computerNamePosition').value = 'top-right';
+            document.getElementById('showDateTime').checked = false;
+            document.getElementById('dateTimeFormat').value = 'both';
+            document.getElementById('dateTimePosition').value = 'top-left';
+            document.getElementById('topLogoUrl').value = '';
+            document.getElementById('sideLogoUrl').value = '';
+            document.getElementById('sideLogoPosition').value = 'left';
+            document.getElementById('showFooter').checked = true;
+            document.getElementById('footerText').value = '';
+            document.getElementById('enableAutoRefresh').checked = false;
+            document.getElementById('autoRefreshDelay').value = '30';
+            document.getElementById('autoRefreshUrl').value = '';
+            document.getElementById('destinationPath').value = 'C:\\ProgramData\\StartPage\\index.html';
+
+            // Reset custom color inputs
+            document.getElementById('customPrimary').value = '#1a1a2e';
+            document.getElementById('customPrimaryPicker').value = '#1a1a2e';
+            document.getElementById('customAccent').value = '#e94560';
+            document.getElementById('customAccentPicker').value = '#e94560';
+
+            // Re-render
+            renderThemeSwatches();
+            renderGroups();
+            renderUngroupedLinks();
+            updatePreview();
+
+            announce('All settings have been reset');
+            alert('Everything has been reset to defaults.');
         }
 
         // Initialize on load

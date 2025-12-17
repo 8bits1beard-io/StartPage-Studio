@@ -7,11 +7,16 @@
 ## Features
 
 - **Visual Editor** - Configure your landing page without writing code
+- **Tabbed Interface** - Organized configuration in Page, Theme, Links, and Export tabs
 - **Live Preview** - See changes in real-time as you edit
 - **Auto-Save** - Your work is automatically saved to browser storage
+- **Dual Logo Support** - Add logos above and beside the greeting text
+- **SVG Upload** - Upload SVG files or reference hosted logos
 - **Color Themes** - 8 preset WCAG-compliant themes plus custom colors
 - **Drag-and-Drop** - Reorder groups and links by dragging
-- **Windows App Links** - Quick-add links to Settings, Calculator, Teams, and more
+- **Local App Shortcuts** - Create .lnk shortcuts for local applications
+- **Auto-Redirect** - Optionally redirect to another page after a delay
+- **Import/Export** - Import previously created start pages for editing
 - **WCAG Compliant** - Generated pages meet accessibility standards
 - **Enterprise Ready** - PowerShell scripts for Intune/SCCM deployment
 
@@ -30,10 +35,12 @@
 |---------|-------------|
 | Page Title | Browser tab text |
 | Greeting | Main heading (e.g., "Welcome") |
+| Top Logo | Logo displayed above the greeting (upload SVG or enter URL) |
+| Side Logo | Logo displayed beside the greeting (upload SVG or enter URL) |
 | Computer Name | Toggle display and position |
 | Date/Time | Optional live clock (ISO 8601) |
-| Logo URL | Optional organization logo |
 | Footer | Optional footer text |
+| Auto-Redirect | Redirect to another URL after specified seconds |
 | Destination Path | Where the landing page saves |
 
 ### Color Themes
@@ -46,17 +53,20 @@ Selecting Walmart auto-populates the Spark logo.
 
 ### Links
 
-- **Add Group** - Create categorized link sections
-- **Add Link** - Add links to a group or ungrouped
+- **Add Group** - Create categorized link sections with optional icons
+- **Add Link** - Add links to a group or as standalone (ungrouped)
+- **Web Links** - Standard URLs that open in the browser
+- **App Links** - Local application paths that generate .lnk shortcuts
 - **Drag handles** - Use ⋮⋮ (groups) or ⋮ (links) to reorder
-- **Windows App dropdown** - Quick-add system settings and built-in apps
 
 ## Download Options
 
 | Option | Use Case |
 |--------|----------|
-| **PowerShell Script** | Enterprise deployment via Intune/SCCM. Captures computer name at runtime. |
+| **PowerShell Script** | Enterprise deployment via Intune/SCCM. Captures computer name at runtime. Creates .lnk shortcuts for any app links. |
 | **HTML Only** | Local testing. Computer name shows as placeholder. |
+| **Import Start Page** | Load a previously generated start page to edit. |
+| **Reset Everything** | Clear all settings and start fresh. |
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for enterprise deployment instructions.
 

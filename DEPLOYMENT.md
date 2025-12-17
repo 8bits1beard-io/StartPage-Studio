@@ -9,6 +9,7 @@ This guide covers deploying StartPage Studio landing pages in enterprise environ
 The downloaded PowerShell script:
 - Reads the device's computer name from Windows
 - Creates the landing page at your configured destination path (default: `C:\ProgramData\StartPage\index.html`)
+- Creates .lnk shortcuts for any app links in the same folder as the landing page
 - Logs to a `Logs` subfolder in the destination directory
 
 ### index.html
@@ -18,6 +19,10 @@ The generated landing page includes:
 - Responsive design for all screen sizes
 - WCAG accessibility features
 - All styling inline (no external dependencies)
+
+### App Shortcuts (.lnk files)
+
+When you create links with type "App" (for local applications), the PowerShell script generates Windows shortcut files (.lnk) in the same directory as the landing page. The landing page links to these shortcuts, allowing users to launch local applications directly from the browser.
 
 ## Local Testing
 

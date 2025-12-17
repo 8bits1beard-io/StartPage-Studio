@@ -820,6 +820,46 @@
             display: flex;
             justify-content: flex-end;
         }
+
+        /* Tab styles */
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid var(--gray-300);
+            margin-bottom: 1rem;
+            gap: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 0.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--true-blue);
+            background: var(--gray-50);
+        }
+
+        .tab-btn.active {
+            color: var(--true-blue);
+            border-bottom-color: var(--true-blue);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -840,14 +880,18 @@
         <section class="panel" aria-labelledby="config-heading">
             <h2 id="config-heading" class="panel-header">Configuration</h2>
             <div class="panel-body editor-scroll">
-                <!-- Page Settings -->
+                <!-- Tab Navigation -->
+                <nav class="tab-nav" role="tablist">
+                    <button type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-page" onclick="switchTab('page')">Page</button>
+                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-theme" onclick="switchTab('theme')">Theme</button>
+                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-links" onclick="switchTab('links')">Links</button>
+                    <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-export" onclick="switchTab('export')">Export</button>
+                </nav>
+
+                <!-- Page Tab -->
+                <div id="tab-page" class="tab-panel active" role="tabpanel">
                 <fieldset style="border: none; padding: 0; margin: 0;">
-                    <div class="section-header" id="page-settings-header" onclick="toggleSection('page-settings')" aria-expanded="true" aria-controls="page-settings-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('page-settings')">
-                        <legend style="color: var(--true-blue); font-size: 1.17em; font-weight: bold; cursor: pointer;">
-                            <span class="collapse-icon">▼</span> Page Settings
-                        </legend>
-                    </div>
-                    <div class="section-content" id="page-settings-content">
+                    <legend class="visually-hidden">Page Settings</legend>
                     <div class="form-group">
                         <label for="pageTitle">Page Title <small>(browser tab)</small></label>
                         <input type="text" id="pageTitle" value="Quick Links" oninput="updatePreview()">
@@ -973,19 +1017,12 @@
                         <label for="destinationPath">Destination Path <small>(where landing page will be saved)</small></label>
                         <input type="text" id="destinationPath" value="C:\ProgramData\StartPage\index.html" placeholder="C:\ProgramData\StartPage\index.html">
                     </div>
-                    </div>
                 </fieldset>
+                </div>
 
-                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-300);">
-
-                <!-- Color Theme -->
+                <!-- Theme Tab -->
+                <div id="tab-theme" class="tab-panel" role="tabpanel">
                 <section aria-labelledby="theme-heading">
-                    <div class="section-header collapsed" id="color-theme-header" onclick="toggleSection('color-theme')" aria-expanded="false" aria-controls="color-theme-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('color-theme')">
-                        <h3 id="theme-heading" style="color: var(--true-blue); cursor: pointer;">
-                            <span class="collapse-icon">▼</span> Color Theme
-                        </h3>
-                    </div>
-                    <div class="section-content collapsed" id="color-theme-content">
                     <p id="theme-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
                         Choose a color theme for your landing page.
                     </p>
@@ -1014,21 +1051,16 @@
                     <div id="customWarning" class="custom-warning">
                         Custom colors may not meet WCAG accessibility standards. Ensure sufficient contrast between background and text colors.
                     </div>
-                    </div>
                 </section>
+                </div>
 
-                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-300);">
-
+                <!-- Links Tab -->
+                <div id="tab-links" class="tab-panel" role="tabpanel">
                 <!-- Link Groups -->
                 <section aria-labelledby="groups-heading">
-                    <div class="section-header" id="link-groups-header" onclick="toggleSection('link-groups')" aria-expanded="true" aria-controls="link-groups-content" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSection('link-groups')">
-                        <h3 id="groups-heading" style="color: var(--true-blue); cursor: pointer;">
-                            <span class="collapse-icon">▼</span> Link Groups
-                        </h3>
-                    </div>
-                    <div class="section-content" id="link-groups-content">
+                    <h3 id="groups-heading" style="color: var(--true-blue); margin-bottom: 0.5rem;">Link Groups</h3>
                     <p id="groups-description" style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
-                        Organize links into groups, or add ungrouped links below.
+                        Organize links into groups with headings.
                     </p>
 
                     <div id="groupsContainer" class="groups-container" role="region" aria-labelledby="groups-heading" aria-describedby="groups-description" aria-live="polite">
@@ -1068,10 +1100,10 @@
                     </div>
                     </div>
                 </section>
+                </div>
 
-                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-300);">
-
-                <!-- Generate Section -->
+                <!-- Export Tab -->
+                <div id="tab-export" class="tab-panel" role="tabpanel">
                 <section class="output-section" aria-labelledby="output-heading">
                     <h3 id="output-heading" class="visually-hidden">Download Options</h3>
                     <div class="output-actions" style="flex-direction: column; align-items: center;">
@@ -1103,6 +1135,7 @@
                         </p>
                     </div>
                 </section>
+                </div>
             </div>
         </section>
 
@@ -1144,6 +1177,20 @@
         let ungroupedLinks = [];
         let groupIdCounter = 0;
         let linkIdCounter = 0;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const isActive = btn.getAttribute('aria-controls') === 'tab-' + tabName;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive);
+            });
+            // Update panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === 'tab-' + tabName);
+            });
+        }
 
         // Theme presets (all WCAG AA verified)
         const themes = {

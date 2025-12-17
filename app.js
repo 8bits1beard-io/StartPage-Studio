@@ -18,6 +18,63 @@ function switchTab(tabName) {
     });
 }
 
+// Validate that no two elements share the same corner position
+function validatePositions() {
+    const positions = [];
+    const warnings = {
+        computerName: document.getElementById('computerNamePositionWarning'),
+        dateTime: document.getElementById('dateTimePositionWarning'),
+        sideLogo: document.getElementById('sideLogoPositionWarning')
+    };
+
+    // Hide all warnings initially
+    Object.values(warnings).forEach(w => { if (w) w.style.display = 'none'; });
+
+    // Collect active corner positions (not 'left', 'right', or 'footer')
+    const cornerPositions = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+
+    // Check computer name position
+    const showComputerName = document.getElementById('showComputerName').checked;
+    const computerNamePos = document.getElementById('computerNamePosition').value;
+    if (showComputerName && cornerPositions.includes(computerNamePos)) {
+        positions.push({ element: 'computerName', position: computerNamePos });
+    }
+
+    // Check date/time position
+    const showDateTime = document.getElementById('showDateTime').checked;
+    const dateTimePos = document.getElementById('dateTimePosition').value;
+    if (showDateTime && cornerPositions.includes(dateTimePos)) {
+        positions.push({ element: 'dateTime', position: dateTimePos });
+    }
+
+    // Check side logo position
+    const sideLogoUrl = document.getElementById('sideLogoUrl').value;
+    const sideLogoPos = document.getElementById('sideLogoPosition').value;
+    if (sideLogoUrl && cornerPositions.includes(sideLogoPos)) {
+        positions.push({ element: 'sideLogo', position: sideLogoPos });
+    }
+
+    // Find conflicts
+    const positionCounts = {};
+    positions.forEach(p => {
+        positionCounts[p.position] = positionCounts[p.position] || [];
+        positionCounts[p.position].push(p.element);
+    });
+
+    // Show warnings for conflicts
+    let hasConflicts = false;
+    Object.entries(positionCounts).forEach(([pos, elements]) => {
+        if (elements.length > 1) {
+            hasConflicts = true;
+            elements.forEach(el => {
+                if (warnings[el]) warnings[el].style.display = 'block';
+            });
+        }
+    });
+
+    return !hasConflicts;
+}
+
 // Theme presets (all WCAG AA verified)
 const themes = {
     walmart: { name: 'Walmart', primary: '#0053E2', accent: '#FFC220' },
@@ -826,6 +883,8 @@ function generateHTML(useComputerNameVariable = false) {
 
     const topLogoHTML = topLogoUrl ? `<img class="top-logo" src="${escapeHtml(topLogoUrl)}" alt="Logo">` : '';
     const sideLogoHTML = sideLogoUrl ? `<img class="side-logo" src="${escapeHtml(sideLogoUrl)}" alt="">` : '';
+    const cornerPositions = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+    const isSideLogoCorner = sideLogoUrl && cornerPositions.includes(sideLogoPosition);
 
     // Build welcome header with proper structure
     let welcomeHeader = '';
@@ -836,7 +895,8 @@ function generateHTML(useComputerNameVariable = false) {
         </div>`;
     }
 
-    if (sideLogoUrl) {
+    if (sideLogoUrl && !isSideLogoCorner) {
+        // Side logo next to greeting
         const logoFirst = sideLogoPosition === 'left';
         welcomeHeader += `
         <div class="greeting-row${sideLogoPosition === 'right' ? ' logo-right' : ''}">
@@ -846,6 +906,12 @@ function generateHTML(useComputerNameVariable = false) {
         welcomeHeader += `
         <h1>${escapeHtml(greeting)}</h1>`;
     }
+
+    // Corner logo overlay HTML (rendered separately in body)
+    const cornerLogoHTML = isSideLogoCorner ? `
+    <div class="corner-logo ${sideLogoPosition}">
+        <img src="${escapeHtml(sideLogoUrl)}" alt="Logo">
+    </div>` : '';
 
     // Build configuration object for import/export
     const config = {
@@ -1029,6 +1095,51 @@ function generateHTML(useComputerNameVariable = false) {
         }
 
         .date-time.bottom-left {
+            bottom: 1rem;
+            left: 1rem;
+        }
+
+        .corner-logo {
+            position: fixed;
+            z-index: 50;
+            max-width: 120px;
+            max-height: 60px;
+        }
+
+        .corner-logo img {
+            max-width: 100%;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        .corner-logo.top-right {
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .corner-logo.top-center {
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .corner-logo.top-left {
+            top: 1rem;
+            left: 1rem;
+        }
+
+        .corner-logo.bottom-right {
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        .corner-logo.bottom-center {
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .corner-logo.bottom-left {
             bottom: 1rem;
             left: 1rem;
         }
@@ -1234,6 +1345,7 @@ ${showDateTime && dateTimePosition !== 'footer' ? `
         --
     </div>
 ` : ''}
+${cornerLogoHTML}
     <main id="main-content" role="main">
         ${welcomeHeader}
 

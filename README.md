@@ -10,9 +10,9 @@
 - **Tabbed Interface** - Organized configuration in Page, Theme, Links, and Export tabs
 - **Live Preview** - See changes in real-time as you edit
 - **Auto-Save** - Your work is automatically saved to browser storage
-- **Dual Logo Support** - Add logos above and beside the greeting text
+- **Dual Logo Support** - Main logo above greeting, small logo with flexible corner/greeting positioning
 - **SVG Upload** - Upload SVG files or reference hosted logos
-- **Color Themes** - 8 preset WCAG-compliant themes plus custom colors
+- **Color Themes** - 20 preset WCAG-compliant themes plus custom colors
 - **Drag-and-Drop** - Reorder groups and links by dragging
 - **Local App Shortcuts** - Create .lnk shortcuts for local applications
 - **Auto-Redirect** - Optionally redirect to another page after a delay
@@ -35,8 +35,8 @@
 |---------|-------------|
 | Page Title | Browser tab text |
 | Greeting | Main heading (e.g., "Welcome") |
-| Top Logo | Logo displayed above the greeting (upload SVG or enter URL) |
-| Side Logo | Logo displayed beside the greeting (upload SVG or enter URL) |
+| Main Logo | Logo displayed above the greeting (upload SVG or enter URL) |
+| Small Logo | Secondary logo with flexible positioning (corner or beside greeting) |
 | Computer Name | Toggle display and position |
 | Date/Time | Optional live clock (ISO 8601) |
 | Footer | Optional footer text |

@@ -56,7 +56,7 @@
 
                     <div class="form-group" id="computerNamePositionGroup">
                         <label for="computerNamePosition">Computer name position</label>
-                        <select id="computerNamePosition" onchange="updatePreview(); updateDateTimePositionOptions();">
+                        <select id="computerNamePosition" onchange="validatePositions(); updatePreview(); updateDateTimePositionOptions();">
                             <option value="top-right" selected>Top Right</option>
                             <option value="top-center">Top Center</option>
                             <option value="top-left">Top Left</option>
@@ -64,6 +64,7 @@
                             <option value="bottom-center">Bottom Center</option>
                             <option value="bottom-left">Bottom Left</option>
                         </select>
+                        <small id="computerNamePositionWarning" class="position-warning" style="display: none; color: var(--danger);">Position conflicts with another element</small>
                     </div>
 
                     <div class="form-group">
@@ -84,46 +85,55 @@
 
                     <div class="form-group" id="dateTimePositionGroup" style="display: none;">
                         <label for="dateTimePosition">Date/time position</label>
-                        <select id="dateTimePosition" onchange="updatePreview()">
+                        <select id="dateTimePosition" onchange="validatePositions(); updatePreview()">
                             <option value="top-left">Top Left</option>
                             <option value="top-center">Top Center</option>
+                            <option value="top-right">Top Right</option>
                             <option value="bottom-right">Bottom Right</option>
                             <option value="bottom-center">Bottom Center</option>
                             <option value="bottom-left">Bottom Left</option>
                             <option value="footer">In Footer</option>
                         </select>
+                        <small id="dateTimePositionWarning" class="position-warning" style="display: none; color: var(--danger);">Position conflicts with another element</small>
                     </div>
 
                     <div class="form-group">
-                        <label for="topLogoUrl">Top Logo <small>(above greeting text)</small></label>
+                        <label for="topLogoUrl">Main Logo <small>(above greeting text)</small></label>
                         <div class="logo-input-row">
                             <input type="url" id="topLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
                             <label for="topLogoUpload" class="btn btn-secondary btn-sm upload-btn">
                                 Upload SVG
                                 <input type="file" id="topLogoUpload" accept=".svg,image/svg+xml" onchange="handleLogoUpload('top', this)" class="visually-hidden">
                             </label>
-                            <button type="button" class="btn btn-sm" onclick="clearLogo('top')" aria-label="Clear top logo" title="Clear">&#10005;</button>
+                            <button type="button" class="btn btn-sm" onclick="clearLogo('top')" aria-label="Clear main logo" title="Clear">&#10005;</button>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="sideLogoUrl">Side Logo <small>(beside greeting text)</small></label>
+                        <label for="sideLogoUrl">Small Logo</label>
                         <div class="logo-input-row">
                             <input type="url" id="sideLogoUrl" value="" placeholder="https://example.com/logo.png" oninput="updatePreview()">
                             <label for="sideLogoUpload" class="btn btn-secondary btn-sm upload-btn">
                                 Upload SVG
                                 <input type="file" id="sideLogoUpload" accept=".svg,image/svg+xml" onchange="handleLogoUpload('side', this)" class="visually-hidden">
                             </label>
-                            <button type="button" class="btn btn-sm" onclick="clearLogo('side')" aria-label="Clear side logo" title="Clear">&#10005;</button>
+                            <button type="button" class="btn btn-sm" onclick="clearLogo('side')" aria-label="Clear small logo" title="Clear">&#10005;</button>
                         </div>
                     </div>
 
                     <div class="form-group" id="sideLogoPositionGroup" style="display: none;">
-                        <label for="sideLogoPosition">Side logo position</label>
-                        <select id="sideLogoPosition" onchange="updatePreview()">
+                        <label for="sideLogoPosition">Small logo position</label>
+                        <select id="sideLogoPosition" onchange="validatePositions(); updatePreview()">
                             <option value="left" selected>Left of greeting</option>
                             <option value="right">Right of greeting</option>
+                            <option value="top-left">Top Left</option>
+                            <option value="top-center">Top Center</option>
+                            <option value="top-right">Top Right</option>
+                            <option value="bottom-left">Bottom Left</option>
+                            <option value="bottom-center">Bottom Center</option>
+                            <option value="bottom-right">Bottom Right</option>
                         </select>
+                        <small id="sideLogoPositionWarning" class="position-warning" style="display: none; color: var(--danger);">Position conflicts with another element</small>
                     </div>
 
                     <div class="form-group">

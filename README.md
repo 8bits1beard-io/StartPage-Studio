@@ -15,6 +15,8 @@
 - **Color Themes** - 20 preset WCAG-compliant themes plus custom colors
 - **Drag-and-Drop** - Reorder groups and links by dragging
 - **Local App Shortcuts** - Create .lnk shortcuts for local applications
+- **Quick Start Templates** - Load ready-made kiosk layouts
+- **App Presets** - Pick common Windows tools with prefilled paths
 - **Auto-Redirect** - Optionally redirect to another page after a delay
 - **Import/Export** - Import previously created landing pages for editing
 - **WCAG Compliant** - Generated pages meet accessibility standards
@@ -24,9 +26,9 @@
 
 1. **Open** `index.html` in any modern browser
 2. **Or try the hosted version** https://landingpage-studio.pages.dev
-2. **Configure** your page settings, colors, and links
-3. **Preview** changes in real-time on the right panel
-4. **Download** the PowerShell script or standalone HTML
+3. **Configure** your page settings, colors, and links
+4. **Preview** changes in real-time on the right panel
+5. **Download** the PowerShell script or standalone HTML
 
 ## Configuration
 
@@ -56,7 +58,7 @@ Choose from 20 preset themes or create custom colors:
 - **Add Group** - Create categorized link sections with optional icons
 - **Add Link** - Add links to a group or as standalone (ungrouped)
 - **Web Links** - Standard URLs that open in the browser
-- **App Links** - Local application paths that generate .lnk shortcuts
+- **App Links** - Local application paths and arguments that generate .lnk shortcuts
 - **Drag handles** - Use ⋮⋮ (groups) or ⋮ (links) to reorder
 
 ## Download Options

@@ -22,7 +22,7 @@ The generated landing page includes:
 
 ### App Shortcuts (.lnk files)
 
-When you create links with type "App" (for local applications), the PowerShell script generates Windows shortcut files (.lnk) in the same directory as the landing page. The landing page links to these shortcuts, allowing users to launch local applications directly from the browser.
+When you create links with type "App" (for local applications), the PowerShell script generates Windows shortcut files (.lnk) in the same directory as the landing page. The landing page links to these shortcuts, allowing users to launch local applications directly from the browser. If you supply app arguments, they are stored in the shortcut as well.
 
 ## Local Testing
 

@@ -463,6 +463,14 @@ select:focus-visible {
     border-radius: 4px;
 }
 
+.link-row select.app-preset-select {
+    min-width: 170px;
+    flex: 0 0 auto;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: 4px;
+}
+
 /* Drag and drop styles */
 .drag-handle {
     cursor: grab;

@@ -135,6 +135,24 @@ const TEMPLATES = {
     }
 };
 
+const APP_PRESETS = [
+    { key: 'custom', name: 'Custom', path: '', args: '' },
+    { key: 'volume-control', name: 'Volume Control', path: 'C:\\Windows\\System32\\SndVol.exe', args: '' },
+    { key: 'print-spooler', name: 'Print Spooler (Services)', path: 'C:\\Windows\\System32\\services.msc', args: '' },
+    { key: 'file-explorer', name: 'File Explorer', path: 'C:\\Windows\\explorer.exe', args: '' },
+    { key: 'task-manager', name: 'Task Manager', path: 'C:\\Windows\\System32\\Taskmgr.exe', args: '' },
+    { key: 'command-prompt', name: 'Command Prompt', path: 'C:\\Windows\\System32\\cmd.exe', args: '' },
+    { key: 'powershell', name: 'PowerShell', path: 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', args: '' },
+    { key: 'control-panel', name: 'Control Panel', path: 'C:\\Windows\\System32\\control.exe', args: '' },
+    { key: 'notepad', name: 'Notepad', path: 'C:\\Windows\\System32\\notepad.exe', args: '' },
+    { key: 'calculator', name: 'Calculator', path: 'C:\\Windows\\System32\\calc.exe', args: '' },
+    { key: 'snipping-tool', name: 'Snipping Tool', path: 'C:\\Windows\\System32\\SnippingTool.exe', args: '' },
+    { key: 'remote-desktop', name: 'Remote Desktop', path: 'C:\\Windows\\System32\\mstsc.exe', args: '' },
+    { key: 'device-manager', name: 'Device Manager', path: 'C:\\Windows\\System32\\devmgmt.msc', args: '' },
+    { key: 'disk-management', name: 'Disk Management', path: 'C:\\Windows\\System32\\diskmgmt.msc', args: '' },
+    { key: 'event-viewer', name: 'Event Viewer', path: 'C:\\Windows\\System32\\eventvwr.msc', args: '' }
+];
+
 // State management
 let groups = [];
 let ungroupedLinks = [];
@@ -843,6 +861,39 @@ function updateGroupLink(groupId, linkId, field, value) {
     }
 }
 
+function markAppPresetCustom(selectId) {
+    const select = document.getElementById(selectId);
+    if (select && select.value !== 'custom') {
+        select.value = 'custom';
+    }
+}
+
+function applyAppPreset(targetType, groupId, linkId, presetKey) {
+    const preset = APP_PRESETS.find(item => item.key === presetKey);
+    if (!preset) return;
+
+    if (targetType === 'group') {
+        const group = groups.find(g => g.id === groupId);
+        if (group) {
+            const link = group.links.find(l => l.id === linkId);
+            if (link) {
+                link.appPath = preset.path;
+                link.appArgs = preset.args;
+            }
+        }
+        renderGroups();
+    } else {
+        const link = ungroupedLinks.find(l => l.id === linkId);
+        if (link) {
+            link.appPath = preset.path;
+            link.appArgs = preset.args;
+        }
+        renderUngroupedLinks();
+    }
+    updatePreview();
+    announce(`${preset.name} preset applied`);
+}
+
 // Add ungrouped link
 function addUngroupedLink() {
     ungroupedLinks.push({ id: linkIdCounter++, name: '', url: '' });
@@ -938,10 +989,17 @@ function renderGroups() {
                                onchange="updateGroupLink(${group.id}, ${link.id}, 'url', this.value)"
                                onblur="validateUrlInput(this)">
                         ` : `
+                        ${renderAppPresetSelect(`app-preset-${group.id}-${link.id}`, getPresetKey(link.appPath || '', link.appArgs || ''), 'group', group.id, link.id)}
                         <input type="text" id="link-apppath-${group.id}-${link.id}" value="${escapeHtml(link.appPath || '')}"
                                placeholder="C:\\Windows\\System32\\app.exe"
                                aria-label="Executable path"
-                               onchange="updateGroupLink(${group.id}, ${link.id}, 'appPath', this.value)">
+                               onchange="updateGroupLink(${group.id}, ${link.id}, 'appPath', this.value)"
+                               oninput="markAppPresetCustom('app-preset-${group.id}-${link.id}')">
+                        <input type="text" id="link-appargs-${group.id}-${link.id}" value="${escapeHtml(link.appArgs || '')}"
+                               placeholder="Arguments (optional)"
+                               aria-label="Arguments"
+                               onchange="updateGroupLink(${group.id}, ${link.id}, 'appArgs', this.value)"
+                               oninput="markAppPresetCustom('app-preset-${group.id}-${link.id}')">
                         <input type="text" id="link-shortcut-${group.id}-${link.id}" value="${escapeHtml(link.shortcutName || '')}"
                                placeholder="Shortcut.lnk"
                                aria-label="Shortcut filename"
@@ -988,10 +1046,17 @@ function renderUngroupedLinks() {
                    onchange="updateUngroupedLink(${link.id}, 'url', this.value)"
                    onblur="validateUrlInput(this)">
             ` : `
+            ${renderAppPresetSelect(`app-preset-ungrouped-${link.id}`, getPresetKey(link.appPath || '', link.appArgs || ''), 'ungrouped', 0, link.id)}
             <input type="text" id="ungrouped-apppath-${link.id}" value="${escapeHtml(link.appPath || '')}"
                    placeholder="C:\\Windows\\System32\\app.exe"
                    aria-label="Executable path"
-                   onchange="updateUngroupedLink(${link.id}, 'appPath', this.value)">
+                   onchange="updateUngroupedLink(${link.id}, 'appPath', this.value)"
+                   oninput="markAppPresetCustom('app-preset-ungrouped-${link.id}')">
+            <input type="text" id="ungrouped-appargs-${link.id}" value="${escapeHtml(link.appArgs || '')}"
+                   placeholder="Arguments (optional)"
+                   aria-label="Arguments"
+                   onchange="updateUngroupedLink(${link.id}, 'appArgs', this.value)"
+                   oninput="markAppPresetCustom('app-preset-ungrouped-${link.id}')">
             <input type="text" id="ungrouped-shortcut-${link.id}" value="${escapeHtml(link.shortcutName || '')}"
                    placeholder="Shortcut.lnk"
                    aria-label="Shortcut filename"
@@ -1011,6 +1076,24 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text || '';
     return div.innerHTML;
+}
+
+function getPresetKey(appPath, appArgs) {
+    const match = APP_PRESETS.find(item => item.path === appPath && item.args === appArgs);
+    return match ? match.key : 'custom';
+}
+
+function renderAppPresetSelect(selectId, presetKey, targetType, groupId, linkId) {
+    const options = APP_PRESETS.map(item =>
+        `<option value="${item.key}" ${item.key === presetKey ? 'selected' : ''}>${item.name}</option>`
+    ).join('');
+    const safeGroupId = typeof groupId === 'number' ? groupId : 0;
+    return `
+        <select class="app-preset-select" id="${selectId}" aria-label="App preset"
+                onchange="applyAppPreset('${targetType}', ${safeGroupId}, ${linkId}, this.value)">
+            ${options}
+        </select>
+    `;
 }
 
 // Generate the HTML content
@@ -1152,6 +1235,7 @@ function generateHTML(useComputerNameVariable = false) {
                 type: l.type || 'web',
                 url: l.url || '',
                 appPath: l.appPath || '',
+                appArgs: l.appArgs || '',
                 shortcutName: l.shortcutName || ''
             }))
         })),
@@ -1160,6 +1244,7 @@ function generateHTML(useComputerNameVariable = false) {
             type: l.type || 'web',
             url: l.url || '',
             appPath: l.appPath || '',
+            appArgs: l.appArgs || '',
             shortcutName: l.shortcutName || ''
         }))
     };
@@ -1685,7 +1770,8 @@ function generatePowerShellScript() {
             if (link.type === 'app' && link.appPath) {
                 appLinks.push({
                     name: link.shortcutName || (link.name + '.lnk'),
-                    path: link.appPath
+                    path: link.appPath,
+                    args: link.appArgs || ''
                 });
             }
         });
@@ -1694,7 +1780,8 @@ function generatePowerShellScript() {
         if (link.type === 'app' && link.appPath) {
             appLinks.push({
                 name: link.shortcutName || (link.name + '.lnk'),
-                path: link.appPath
+                path: link.appPath,
+                args: link.appArgs || ''
             });
         }
     });
@@ -1710,9 +1797,11 @@ $WshShell = New-Object -ComObject WScript.Shell
             const shortcutName = app.name.endsWith('.lnk') ? app.name : app.name + '.lnk';
             const escapedName = shortcutName.replace(/'/g, "''");
             const escapedPath = app.path.replace(/'/g, "''");
+            const escapedArgs = app.args.replace(/'/g, "''");
             shortcutCode += `
 $shortcut = $WshShell.CreateShortcut("$outputFolder\\${escapedName}")
 $shortcut.TargetPath = '${escapedPath}'
+${app.args ? `$shortcut.Arguments = '${escapedArgs}'` : ''}
 $shortcut.Save()
 Write-Log "Created shortcut: ${escapedName}"
 `;
@@ -1956,6 +2045,7 @@ function applyImportedConfig(config) {
                 type: l.type || 'web',
                 url: l.url || '',
                 appPath: l.appPath || '',
+                appArgs: l.appArgs || '',
                 shortcutName: l.shortcutName || ''
             }))
         }));
@@ -1970,6 +2060,7 @@ function applyImportedConfig(config) {
             type: l.type || 'web',
             url: l.url || '',
             appPath: l.appPath || '',
+            appArgs: l.appArgs || '',
             shortcutName: l.shortcutName || ''
         }));
         renderUngroupedLinks();

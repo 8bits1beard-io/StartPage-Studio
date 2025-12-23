@@ -38,6 +38,27 @@
                 <div id="tab-page" class="tab-panel active" role="tabpanel">
                 <fieldset style="border: none; padding: 0; margin: 0;">
                     <legend class="visually-hidden">Page Settings</legend>
+                    <div class="template-section" aria-labelledby="templates-heading">
+                        <h3 id="templates-heading" class="section-title">Quick Start Templates</h3>
+                        <p class="template-description">Load a ready-made layout to customize.</p>
+                        <div class="template-grid">
+                            <article class="template-card">
+                                <h4>Customer Facing Kiosk</h4>
+                                <p>Wayfinding, services, and guest support links for on-site kiosks.</p>
+                                <div class="template-actions">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="loadTemplate('customerFacing')">Load template</button>
+                                </div>
+                            </article>
+                            <article class="template-card">
+                                <h4>Employee Kiosk</h4>
+                                <p>HR, IT, and operational tools for team members and shared devices.</p>
+                                <div class="template-actions">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="loadTemplate('employeeKiosk')">Load template</button>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                    <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
                     <div class="form-group">
                         <label for="pageTitle">Page Title <small>(browser tab)</small></label>
                         <input type="text" id="pageTitle" value="Quick Links" oninput="debouncedUpdatePreview()">

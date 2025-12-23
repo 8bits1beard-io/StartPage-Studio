@@ -13,6 +13,128 @@ const DEFAULTS = {
     scriptName: 'MyLandingPage'
 };
 
+const TEMPLATES = {
+    customerFacing: {
+        name: 'Customer Facing Kiosk',
+        scriptName: 'CustomerFacingKiosk',
+        config: {
+            settings: {
+                pageTitle: 'Customer Kiosk',
+                greeting: 'Welcome',
+                showComputerName: false,
+                computerNamePosition: 'top-right',
+                showDateTime: true,
+                dateTimeFormat: 'both',
+                dateTimePosition: 'footer',
+                topLogoUrl: '',
+                sideLogoUrl: '',
+                sideLogoPosition: 'left',
+                showFooter: true,
+                footerText: 'Need help? Visit the service desk or call 555-0100.',
+                enableAutoRefresh: false,
+                autoRefreshDelay: '30',
+                autoRefreshUrl: ''
+            },
+            theme: {
+                selectedTheme: 'ocean',
+                customColors: null
+            },
+            groups: [
+                {
+                    name: 'Start Here',
+                    links: [
+                        { name: 'Store Map', type: 'web', url: 'https://example.com/map' },
+                        { name: 'Deals', type: 'web', url: 'https://example.com/deals' },
+                        { name: 'Events', type: 'web', url: 'https://example.com/events' }
+                    ]
+                },
+                {
+                    name: 'Services',
+                    links: [
+                        { name: 'Customer Support', type: 'web', url: 'https://example.com/support' },
+                        { name: 'Returns', type: 'web', url: 'https://example.com/returns' },
+                        { name: 'Order Status', type: 'web', url: 'https://example.com/orders' }
+                    ]
+                },
+                {
+                    name: 'Guest Access',
+                    links: [
+                        { name: 'Wi-Fi Setup', type: 'web', url: 'https://example.com/wifi' },
+                        { name: 'Accessibility', type: 'web', url: 'https://example.com/accessibility' }
+                    ]
+                }
+            ],
+            ungroupedLinks: [
+                { name: 'Hours & Locations', type: 'web', url: 'https://example.com/locations' },
+                { name: 'Share Feedback', type: 'web', url: 'https://example.com/feedback' }
+            ]
+        }
+    },
+    employeeKiosk: {
+        name: 'Employee Kiosk',
+        scriptName: 'EmployeeKiosk',
+        config: {
+            settings: {
+                pageTitle: 'Employee Kiosk',
+                greeting: 'Hello Team',
+                showComputerName: true,
+                computerNamePosition: 'top-right',
+                showDateTime: true,
+                dateTimeFormat: 'both',
+                dateTimePosition: 'top-left',
+                topLogoUrl: '',
+                sideLogoUrl: '',
+                sideLogoPosition: 'left',
+                showFooter: true,
+                footerText: 'Security note: sign out when finished.',
+                enableAutoRefresh: false,
+                autoRefreshDelay: '30',
+                autoRefreshUrl: ''
+            },
+            theme: {
+                selectedTheme: 'corporate',
+                customColors: null
+            },
+            groups: [
+                {
+                    name: 'HR & Benefits',
+                    links: [
+                        { name: 'Pay Statements', type: 'web', url: 'https://intranet.example.com/pay' },
+                        { name: 'Benefits', type: 'web', url: 'https://intranet.example.com/benefits' },
+                        { name: 'Time Off', type: 'web', url: 'https://intranet.example.com/timeoff' }
+                    ]
+                },
+                {
+                    name: 'IT Support',
+                    links: [
+                        { name: 'Service Desk', type: 'web', url: 'https://intranet.example.com/it' },
+                        { name: 'Password Reset', type: 'web', url: 'https://intranet.example.com/password' }
+                    ]
+                },
+                {
+                    name: 'Operations',
+                    links: [
+                        { name: 'Shift Schedule', type: 'web', url: 'https://intranet.example.com/schedule' },
+                        { name: 'SOP Library', type: 'web', url: 'https://intranet.example.com/sop' },
+                        { name: 'Incident Report', type: 'web', url: 'https://intranet.example.com/incident' }
+                    ]
+                },
+                {
+                    name: 'Training',
+                    links: [
+                        { name: 'Learning Portal', type: 'web', url: 'https://intranet.example.com/training' },
+                        { name: 'Compliance', type: 'web', url: 'https://intranet.example.com/compliance' }
+                    ]
+                }
+            ],
+            ungroupedLinks: [
+                { name: 'Company News', type: 'web', url: 'https://intranet.example.com/news' },
+                { name: 'All Hands Stream', type: 'web', url: 'https://intranet.example.com/stream' }
+            ]
+        }
+    }
+};
+
 // State management
 let groups = [];
 let ungroupedLinks = [];
@@ -1856,6 +1978,36 @@ function applyImportedConfig(config) {
     updatePreview();
     saveState();
     validateUrlInput(document.getElementById('autoRefreshUrl'));
+}
+
+// Load a quick start template
+function loadTemplate(templateKey) {
+    const template = TEMPLATES[templateKey];
+    if (!template) return;
+
+    const hasExistingContent = groups.length > 0 || ungroupedLinks.length > 0 || localStorage.getItem(STORAGE_KEY);
+    if (hasExistingContent) {
+        const message = `Load the "${template.name}" template? This will replace your current configuration.`;
+        if (!confirm(message)) return;
+    }
+
+    groups = [];
+    ungroupedLinks = [];
+    groupIdCounter = 0;
+    linkIdCounter = 0;
+    selectedTheme = DEFAULTS.theme;
+    customColors = { ...DEFAULTS.customColors };
+
+    if (template.scriptName) {
+        document.getElementById('scriptName').value = template.scriptName;
+    }
+
+    if (template.destinationPath) {
+        document.getElementById('destinationPath').value = template.destinationPath;
+    }
+
+    applyImportedConfig(template.config);
+    announce(`${template.name} template loaded`);
 }
 
 // Reset everything to defaults

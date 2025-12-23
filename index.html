@@ -164,7 +164,7 @@
                             </div>
                             <div style="flex: 1; min-width: 200px;">
                                 <label for="autoRefreshUrl">Redirect URL</label>
-                                <input type="url" id="autoRefreshUrl" value="" placeholder="https://example.com" oninput="debouncedUpdatePreview()">
+                                <input type="url" id="autoRefreshUrl" value="" placeholder="https://example.com" oninput="debouncedUpdatePreview()" onblur="validateUrlInput(this)">
                             </div>
                         </div>
                     </div>

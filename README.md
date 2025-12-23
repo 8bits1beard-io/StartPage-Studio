@@ -23,6 +23,7 @@
 ## Quick Start
 
 1. **Open** `index.html` in any modern browser
+2. **Or try the hosted version** https://landingpage-studio.pages.dev
 2. **Configure** your page settings, colors, and links
 3. **Preview** changes in real-time on the right panel
 4. **Download** the PowerShell script or standalone HTML

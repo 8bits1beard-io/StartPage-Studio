@@ -364,6 +364,7 @@ function validateUrlInput(input) {
 function validateAllUrls() {
     let allValid = true;
     let invalidCount = 0;
+    const autoRefreshUrl = document.getElementById('autoRefreshUrl').value.trim();
 
     // Validate grouped links
     groups.forEach(group => {
@@ -386,6 +387,13 @@ function validateAllUrls() {
             if (input) input.classList.add('invalid');
         }
     });
+
+    if (autoRefreshUrl && !isValidUrl(autoRefreshUrl)) {
+        allValid = false;
+        invalidCount++;
+        const input = document.getElementById('autoRefreshUrl');
+        if (input) input.classList.add('invalid');
+    }
 
     if (!allValid) {
         alert(`${invalidCount} invalid URL${invalidCount > 1 ? 's' : ''} found. Please fix the highlighted fields.\n\nURLs must start with http://, https://, or be a valid Windows app URI.`);
@@ -901,6 +909,8 @@ function generateHTML(useComputerNameVariable = false) {
     const autoRefreshUrl = document.getElementById('autoRefreshUrl').value.trim();
     const footerText = document.getElementById('footerText').value || '';
     const colors = getActiveColors();
+    const autoRefreshValid = autoRefreshUrl && isValidUrl(autoRefreshUrl);
+    const shouldAutoRefresh = enableAutoRefresh && autoRefreshValid;
 
     const computerNameDisplay = useComputerNameVariable ? '$computerName' : 'COMPUTER-NAME';
 
@@ -914,7 +924,7 @@ function generateHTML(useComputerNameVariable = false) {
             const validLinks = group.links.filter(l => l.name && (l.url || l.appPath));
             if (validLinks.length === 0) return '';
 
-            const groupId = group.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const groupId = `group-${group.id}`;
             const groupIconHtml = group.icon ? `<img class="group-icon" src="${escapeHtml(group.icon)}" alt="">` : '';
             return `
             <section class="link-group" aria-labelledby="${groupId}-heading">
@@ -1039,7 +1049,7 @@ function generateHTML(useComputerNameVariable = false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Landing Page Studio">
-    <meta name="description" content="Quick links landing page">${enableAutoRefresh && autoRefreshUrl ? `
+    <meta name="description" content="Quick links landing page">${shouldAutoRefresh ? `
     <meta http-equiv="refresh" content="${autoRefreshDelay};url=${escapeHtml(autoRefreshUrl)}">` : ''}
     <title>${escapeHtml(pageTitle)}</title>
     <style>
@@ -1454,7 +1464,9 @@ ${showDateTime ? `
         setInterval(updateDateTime, 1000);
     <` + `/script>
 ` : ''}
-<!-- Landing Page Studio Config: ${configJson} -->
+    <script type="application/json" id="landing-page-studio-config">
+        ${configJson.replace(/</g, '\\u003c')}
+    </script>
 </body>
 </html>`;
 }
@@ -1744,20 +1756,26 @@ function importStartPage(input) {
             return;
         }
 
-        // Extract config from comment (check both new and old format)
-        let configMatch = html.match(/<!-- Landing Page Studio Config: (.+?) -->/);
-        if (!configMatch) {
-            configMatch = html.match(/<!-- StartPage Studio Config: (.+?) -->/);
-        }
-        if (!configMatch) {
-            alert('Could not find configuration data in this file.\n\nThe file may have been modified or is from an older version.');
-            input.value = '';
-            return;
-        }
-
         try {
-            const config = JSON.parse(configMatch[1]);
-            applyImportedConfig(config);
+            let configMatch = html.match(/<script type="application\/json" id="landing-page-studio-config">([\s\S]*?)<\/script>/);
+            if (configMatch) {
+                const configJson = configMatch[1].trim();
+                const config = JSON.parse(configJson);
+                applyImportedConfig(config);
+            } else {
+                // Extract config from comment (check both new and old format)
+                configMatch = html.match(/<!-- Landing Page Studio Config: (.+?) -->/);
+                if (!configMatch) {
+                    configMatch = html.match(/<!-- StartPage Studio Config: (.+?) -->/);
+                }
+                if (!configMatch) {
+                    alert('Could not find configuration data in this file.\n\nThe file may have been modified or is from an older version.');
+                    input.value = '';
+                    return;
+                }
+                const config = JSON.parse(configMatch[1]);
+                applyImportedConfig(config);
+            }
             announce('Landing page imported successfully');
             alert('Landing page imported successfully!\n\nYou can now edit and re-export it.');
         } catch (err) {
@@ -1837,6 +1855,7 @@ function applyImportedConfig(config) {
 
     updatePreview();
     saveState();
+    validateUrlInput(document.getElementById('autoRefreshUrl'));
 }
 
 // Reset everything to defaults

@@ -4,13 +4,13 @@ This guide covers the codebase structure for developers who want to modify Start
 
 ## Architecture
 
-StartPage Studio is a single-file application. All HTML, CSS, and JavaScript are in `index.html` with no external dependencies.
+StartPage Studio is a static app with no build step. Structure is split across `index.html` (markup), `styles.css` (styles), and `app.js` (logic), with no external dependencies.
 
 ### Key Code Sections
 
 | Section | Location | Purpose |
 |---------|----------|---------|
-| CSS Variables | `:root` block (~line 9) | Editor theming |
+| CSS Variables | `styles.css` `:root` block | Editor theming |
 | State Management | ~line 1041 | `groups`, `ungroupedLinks`, `selectedTheme`, `customColors` |
 | Theme System | ~line 1086 | `themes` object, `getActiveColors()`, `renderThemeSwatches()` |
 | Group/Link CRUD | ~line 1436 | `addGroup()`, `removeGroup()`, `addLinkToGroup()`, etc. |

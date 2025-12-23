@@ -57,6 +57,13 @@
                                 </div>
                             </article>
                         </div>
+                        <div class="template-import">
+                            <label for="importFile" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                                Import Existing Start Page
+                                <input type="file" id="importFile" accept=".html,text/html" onchange="importStartPage(this)" class="visually-hidden">
+                            </label>
+                            <p class="template-import-note">Load a previously generated start page to edit.</p>
+                        </div>
                     </div>
                     <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
                     <div class="form-group">
@@ -301,13 +308,6 @@
                             For testing. Computer name shows as placeholder.
                         </p>
                         <hr style="width: 100%; margin: 1rem 0; border: none; border-top: 1px solid var(--border);">
-                        <label for="importFile" class="btn btn-secondary btn-sm" style="cursor: pointer;">
-                            Import Existing Start Page
-                            <input type="file" id="importFile" accept=".html,text/html" onchange="importStartPage(this)" class="visually-hidden">
-                        </label>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
-                            Load a previously generated start page to edit.
-                        </p>
                         <button type="button" class="btn btn-danger btn-sm" onclick="resetAll()" style="margin-top: 0.75rem;">
                             Reset Everything
                         </button>

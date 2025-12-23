@@ -173,6 +173,20 @@ header h1 {
     justify-content: flex-end;
 }
 
+.template-import {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.template-import-note {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
 label {
     display: block;
     font-weight: 500;
